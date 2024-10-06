@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FZ</title>
+    <link rel="stylesheet" href="../css/arena.css">
+</head>
+<body>
+    <div id="camera">
+        <div id="fullscreen" style="display: none;"><p>Tap for full screen mode</p></div>
+        <div class="chat-box">
+            <ul class="chat-messages" id="chatMessages"></ul>
+            <input id="inputMessage" type="text" maxlength="128" placeholder="Message"></input:>
+        </div>
+        <p id="ping"></p>
+        <div id="goalOverlay" style="display: none;">
+          <p id="goal">GOAL!</p>
+          <p id="author"></p>
+        </div>
+        <div id="scoreboard"><p id="score">0:0</p></div>
+        <div id="gameArea">
+          <div id="pitch">
+            <div id="post"></div>
+          </div>
+        </div>
+    </div>
+    <div id="joy"></div>
+    <div id="kick" style="display: none;"></div>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../js/joy.js"></script>
+    <script src="../js/arena.js"></script>
+</body>
+</html>
