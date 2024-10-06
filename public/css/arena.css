@@ -1,0 +1,210 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    z-index: 0;
+}
+
+#camera {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+#ping {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #ffffff;
+    font-weight: 600;
+    z-index: 5;
+}
+
+#scoreboard {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 46px;
+    background-image: url('../images/score.png');
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+}
+
+#score {
+    font-weight: 600;
+    font-size: 18px;
+    color: #2b2b2b;
+}
+
+#homeGoal, #awayGoal {
+    color: #f5f5f5;
+}
+
+#fullscreen {
+    position: absolute;
+    background-color: #00000080;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 7;
+}
+
+#fullscreen > p {
+    color: #f5f5f5;
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.chat-box {
+    position: fixed;
+    width: 25%;
+    height: 25%;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 100;
+}
+
+.chat-messages {
+    padding: 10px;
+    color: #f5f5f5;
+    overflow-wrap: break-word;
+    overflow-y: auto;
+}
+
+#inputMessage {
+    border: none;
+    outline: none;
+    padding: 10px;
+    color: #f5f5f5;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+#inputMessage::placeholder {
+    color: #f5f5f54b;
+}
+
+#gameArea {
+    position: absolute;
+}
+
+#pitch, #post {
+    position: relative;
+    width: 1900px;
+    height: 1550px;
+}
+
+#pitch {
+    background-image: url('../images/pitch.png');
+    z-index: 1;
+}
+
+#post {
+    background-image: url('../images/post.png');
+    z-index: 3;
+}
+
+.ball, .player {
+    position: absolute;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.ball {
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff;
+    background-image: url('../images/ball.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: solid 2px #ffffff;
+}
+
+.player {
+    width: 40px;
+    height: 40px;
+    border: solid 3px #00000050;
+}
+
+.nickname {
+    position: absolute;
+    padding: 1px 3px;
+    font-size: 8px;
+    font-weight: 600;
+    top: -20px; 
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+}
+
+#joy {
+    position: fixed;
+    left: 30px;
+    bottom: 30px;
+    width: 150px;
+    height: 150px;
+    opacity: 0.3;
+    z-index: 4;
+}
+
+#kick {
+    position: fixed;
+    right: 50px;
+    bottom: 50px;
+    width: 100px;
+    height: 100px;
+    background-color: #ff0000;
+    background-image: url('../images/kick.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    opacity: 0.3;
+    z-index: 4;
+}
+
+@font-face {
+    src: url("https://www.axis-praxis.org/fonts/webfonts/MetaVariableDemo-Set.woff2")
+    format("woff2");
+    font-family: "Meta";
+    font-style: normal;
+    font-weight: normal;
+}
+
+#goal {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -20%);
+    font-variation-settings: "wght" 900, "ital" 1;
+    font-size: 5rem;
+    text-align: center;e
+    font-family: "Meta", sans-serif;
+    color: transparent;
+    z-index: 6;
+}
+
+#author {
+    position: absolute;
+    left: 50%;
+    bottom: 20%;
+    transform: translate(-50%, -20%);
+    padding: 5px 10px;
+    font-size: 16px;
+    font-weight: 600;
+    z-index: 6;
+}
