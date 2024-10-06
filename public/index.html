@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FZ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            height: 100vh;
+            background-image: url('images/bg.jpg');
+            background-size: cover;
+            background-repeat: no-repeat; 
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        main {
+            padding: 10px;
+            background-color: #ffffffde;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            border-radius: 5px;
+        }
+    
+        main > div {
+            display: flex;
+            border-radius: 5px;
+            border: solid 1px #0000001a;
+            background-color: #ffffff7e;
+            overflow: hidden;
+        }
+
+        input {
+            border: none;
+            outline: none;
+        }
+
+        #colorDiv {
+            height: auto;
+            width: 30px;
+            background-color: #000000;
+        }
+
+        #nickname {
+            padding: 0.5rem;
+            background-color: transparent;
+        }
+
+        #server {
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: solid 1px #0000001a;
+            background-color: #ffffff7e;
+        }
+    
+        #start {
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: #000000;
+        }
+
+    </style>
+</head>
+<body>
+    <main>
+        <input id="server" type="url" placeholder="Server address" value="http://fz.servegame.com/">
+        <div>
+            <input id="nickname" type="text" placeholder="Choose your nickname" maxlength="16">
+            <div id="colorDiv">
+                <input id="color" type="color" style="display: none;">
+            </div>
+        </div>
+        <input id="start" type="button" value="Continue">
+    </main>
+    <script>
+        document.getElementById('colorDiv').addEventListener('click', () => {
+            document.getElementById('color').click(); 
+        });
+
+        document.getElementById('color').addEventListener('input', function() {
+            document.getElementById('colorDiv').style.backgroundColor = document.getElementById('color').value;
+        });
+
+        document.getElementById('start').addEventListener('click', () => {
+            const nickname = document.getElementById('nickname').value;
+            const server = document.getElementById('server').value;
+            
+            if (nickname && server) {
+                const playerData = { nickname: nickname, color: document.getElementById('color').value };
+                sessionStorage.setItem("playerData", JSON.stringify(playerData));
+                sessionStorage.setItem("serverAddress", server);
+                window.location.href = "pages/arena.html";
+            } else {
+                alert("Invalid nickname or server.");
+            }
+        });
+    </script>
+</body>
+</html>
