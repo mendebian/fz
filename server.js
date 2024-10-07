@@ -86,7 +86,8 @@ io.on('connection', (socket) => {
         }
 
         socket.on("ping", callback => callback());
-
+        
+        io.emit('colors', { home: ['#FFED00', '#00417F'], away: ['#A90432', '#FDB912'] });
         io.emit('chat', { entity: players[socket.id], content: { type: 'connection', connected: true } });
         socket.emit('update', { players, ball, score });
         socket.broadcast.emit('update', { players, ball, score });
@@ -307,3 +308,4 @@ setInterval(gameLoop, 1000 / 60);
 server.listen(3000, () => {
     console.log('Server is running...');
 });
+         
