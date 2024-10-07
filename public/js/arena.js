@@ -11,7 +11,7 @@ let screen = { width: window.innerWidth, height: window.innerHeight };
 let players = {}, ball = {}, score = {};
 let keysPressed = {}, kickPressed = false;
 let stickAngle = null; 
-let teamColors = { home: ['#fde100', '#000000'], away: ['#004b9c', '#ffffff'] };
+let teamColors = null;
 
 if (controller === 'touch') {
     setupTouchControls();
@@ -60,6 +60,14 @@ socket.on('update', (data) => {
     ball = data.ball;
     score = data.score;
     drawGame();
+});
+
+socket.on('colors', (data) => {
+    teamColors = data;
+    
+    Object.entries(teamColors).forEach(([team, color]) => {
+        document.getElementById(`${team}Colors`).style.background = `linear-gradient(to right, ${color[0]} 50%, ${color[1]} 50%)`;
+    });
 });
 
 socket.on('chat', (data) => {
@@ -117,7 +125,7 @@ function sendMessage() {
 
 function drawGame() {
     document.getElementById('score').textContent = `${score.home}:${score.away}`;
-
+    
     updatePlayerElements();
     updateBallElement();
 
