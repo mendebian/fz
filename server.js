@@ -34,8 +34,8 @@ let ball = {
     radius: 10,
     velocityX: 0,
     velocityY: 0,
-    friction: 0.98,
-    acceleration: 0.5,
+    friction: 0.982,
+    acceleration: 0.4,
     mass: 1,
     angle: 0,
     active: true,
@@ -96,10 +96,12 @@ io.on('connection', (socket) => {
             io.emit('chat', { entity: players[socket.id], content: data });
         });
 
-        socket.on('move', (data) => {
+        socket.on('move', (angle) => {
             const player = players[socket.id];
-            player.x += Math.cos(data.direction) * data.speed;
-            player.y += Math.sin(data.direction) * data.speed;
+            const speed = 3;
+            
+            player.x += Math.cos(angle) * speed;
+            player.y += Math.sin(angle) * speed;
     
             io.emit('update', { players, ball, score });
         });
@@ -111,7 +113,7 @@ io.on('connection', (socket) => {
 
             if (distanceToBall <= detectionRange) {
                 const angle = Math.atan2(ball.y - player.y, ball.x - player.x);
-                const kickForce = 10;
+                const kickForce = 8;
                 
                 ball.velocityX += Math.cos(angle) * kickForce;
                 ball.velocityY += Math.sin(angle) * kickForce;
@@ -303,9 +305,8 @@ function gameLoop() {
     io.emit('update', { players, ball, score });
 }
 
-setInterval(gameLoop, 1000 / 60);
+setInterval(gameLoop, 1000 / 120);
 
 server.listen(3000, () => {
     console.log('Server is running...');
 });
-         
