@@ -40,6 +40,16 @@ if (setup.mobileControls) {
     kick.addEventListener('touchend', () => kickBall(false));
 }
 
+document.getElementById('fullscreen').addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+              document.documentElement.requestFullscreen();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+});
+
 setInterval(() => {
     const start = Date.now();
 
@@ -159,7 +169,6 @@ function updatePlayerElements() {
 
             playerDiv.style.left = `${player.x - player.radius}px`;
             playerDiv.style.top = `${player.y - player.radius}px`;
-            playerDiv.style.transform = `translate(${player.x - player.radius}px, ${player.y - player.radius})`;
         }
     }
 
