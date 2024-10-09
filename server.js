@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
 
         socket.on('move', (angle) => {
             const player = players[socket.id];
-            const speed = 3.5;
+            const speed = 3;
             
             player.x += Math.cos(angle) * speed;
             player.y += Math.sin(angle) * speed;
@@ -304,7 +304,7 @@ function gameLoop() {
     updatePhysics();
     io.emit('update', { players, ball, score });
 
-    setTimeout(gameLoop, 1000 / 120);
+    setTimeout(gameLoop, 1000 / 60);
 }
 
 gameLoop();
