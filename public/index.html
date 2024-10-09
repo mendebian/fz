@@ -120,6 +120,8 @@
         let more = document.getElementById('more');
         let mobile = document.getElementById('mobile');
     
+        let deferredPrompt;
+    
         if (window.matchMedia('(display-mode: fullscreen)').matches) {
             document.getElementById('install').style.display = 'none';
         }
@@ -141,7 +143,7 @@
 
         window.addEventListener('beforeinstallprompt', (e) => {
           e.preventDefault();
-          const deferredPrompt = e;
+          deferredPrompt = e;
             
           install.style.display = 'block';
 
