@@ -154,15 +154,16 @@ function updatePlayerElements() {
                 nickname.style.backgroundColor = teamColors[player.team][0];
 
                 playerDiv.appendChild(nickname);
-                fragment.appendChild(playerDiv);  // Adicione ao fragment
+                fragment.appendChild(playerDiv);
             }
 
-            playerDiv.style.left = `${player.x - player.radius}px`;
-            playerDiv.style.top = `${player.y - player.radius}px`;
+            //playerDiv.style.left = `${player.x - player.radius}px`;
+            //playerDiv.style.top = `${player.y - player.radius}px`;
+            playerDiv.style.transform = `translate(${player.x - player.radius}px, ${player.y - player.radius})`;
         }
     }
 
-    pitch.appendChild(fragment);  // Adicione tudo ao DOM de uma vez
+    pitch.appendChild(fragment);
 
     const playerDivs = document.querySelectorAll('[id^="player-"]');
     playerDivs.forEach(playerDiv => {
