@@ -113,7 +113,7 @@ io.on('connection', (socket) => {
 
             if (distanceToBall <= detectionRange) {
                 const angle = Math.atan2(ball.y - player.y, ball.x - player.x);
-                const kickForce = 2;
+                const kickForce = 8;
                 
                 ball.velocityX += Math.cos(angle) * kickForce;
                 ball.velocityY += Math.sin(angle) * kickForce;
@@ -303,9 +303,12 @@ function updatePhysics() {
 function gameLoop() {
     updatePhysics();
     io.emit('update', { players, ball, score });
+
+    setTimeout(gameLoop, 1000 / 120);
 }
 
-setInterval(gameLoop, 1000 / 480);
+gameLoop();
+//setInterval(gameLoop, 1000 / 120);
 
 server.listen(3000, () => {
     console.log('Server is running...');
