@@ -138,6 +138,7 @@ i {
 .ball, .player {
     position: absolute;
     border-radius: 50%;
+    transition: transform 0.5s ease;
     z-index: 2;
 }
 
