@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
 
         socket.on('move', (angle) => {
             const player = players[socket.id];
-            const speed = 3;
+            const speed = 2;
             
             player.x += Math.cos(angle) * speed;
             player.y += Math.sin(angle) * speed;
@@ -113,7 +113,7 @@ io.on('connection', (socket) => {
 
             if (distanceToBall <= detectionRange) {
                 const angle = Math.atan2(ball.y - player.y, ball.x - player.x);
-                const kickForce = 8;
+                const kickForce = 2;
                 
                 ball.velocityX += Math.cos(angle) * kickForce;
                 ball.velocityY += Math.sin(angle) * kickForce;
@@ -305,7 +305,7 @@ function gameLoop() {
     io.emit('update', { players, ball, score });
 }
 
-setInterval(gameLoop, 1000 / 240);
+setInterval(gameLoop, 1000 / 480);
 
 server.listen(3000, () => {
     console.log('Server is running...');
