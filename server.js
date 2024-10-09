@@ -305,7 +305,7 @@ function gameLoop() {
     io.emit('update', { players, ball, score });
 }
 
-setInterval(gameLoop, 1000 / 60);
+setInterval(gameLoop, 1000 / 240);
 
 server.listen(3000, () => {
     console.log('Server is running...');
