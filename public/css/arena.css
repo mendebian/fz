@@ -161,18 +161,13 @@ body {
 
 #joy {
     position: fixed;
-    left: 30px;
-    bottom: 30px;
-    width: 150px;
-    height: 150px;
-    opacity: 0.3;
+    width: 130px;
+    height: 130px;
     z-index: 4;
 }
 
 #kick {
     position: fixed;
-    right: 50px;
-    bottom: 50px;
     width: 100px;
     height: 100px;
     background-color: #ff0000;
@@ -181,7 +176,6 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     border-radius: 50%;
-    opacity: 0.3;
     z-index: 4;
 }
 
