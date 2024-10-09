@@ -157,8 +157,8 @@ function updatePlayerElements() {
                 fragment.appendChild(playerDiv);
             }
 
-            //playerDiv.style.left = `${player.x - player.radius}px`;
-            //playerDiv.style.top = `${player.y - player.radius}px`;
+            playerDiv.style.left = `${player.x - player.radius}px`;
+            playerDiv.style.top = `${player.y - player.radius}px`;
             playerDiv.style.transform = `translate(${player.x - player.radius}px, ${player.y - player.radius})`;
         }
     }
