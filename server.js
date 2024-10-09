@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
 
         socket.on('move', (angle) => {
             const player = players[socket.id];
-            const speed = 2;
+            const speed = 3;
             
             player.x += Math.cos(angle) * speed;
             player.y += Math.sin(angle) * speed;
@@ -305,7 +305,7 @@ function gameLoop() {
     io.emit('update', { players, ball, score });
 }
 
-setInterval(gameLoop, 1000 / 120);
+setInterval(gameLoop, 1000 / 90);
 
 server.listen(3000, () => {
     console.log('Server is running...');
