@@ -1,11 +1,20 @@
+const elements = {
+    gameArea: document.getElementById('gameArea'),
+    pitch: document.getElementById('pitch'),
+    camera: document.getElementById('camera'),
+    inputMessage: document.getElementById('inputMessage'),
+    ping: document.getElementById('ping'),
+    chat: document.getElementById('chatMessages'),
+    score: document.getElementById('score'),
+    goalOverlay: document.getElementById('goalOverlay'),
+    goal: document.getElementById('goal'),
+    author: document.getElementById('author'),
+    fullscreenButton: document.getElementById('fullscreen'),
+    kickButton: document.getElementById('kick'),
+    joyStick: document.getElementById('joy')
+};
 const setup = JSON.parse(sessionStorage.getItem("setupData"));
-
 const socket = io(setup.serverAddress);
-const gameArea = document.getElementById('gameArea');
-const pitch = document.getElementById('pitch');
-const camera = document.getElementById('camera');
-const inputMessage = document.getElementById('inputMessage');
-
 let socketId = null;
 let cameraX = 0, cameraY = 0;
 let screen = { width: window.innerWidth, height: window.innerHeight };
@@ -25,12 +34,12 @@ if (setup.mobileControls) {
         }
     });
     
-    const joy = document.getElementById('joy');
+    const joy = elements.joyStick;
     joy.style.opacity = `${controller.opacity}%`;
     joy.style.left = `${controller.margin}px`;
     joy.style.bottom = `${controller.margin}px`;
     
-    const kick = document.getElementById('kick');
+    const kick = elements.kickButton;
     kick.style.opacity = `${controller.opacity}%`;
     kick.style.right = `${parseFloat(controller.margin) + 15}px`;
     kick.style.bottom = `${parseFloat(controller.margin) + 15}px`;
@@ -40,9 +49,9 @@ if (setup.mobileControls) {
     kick.addEventListener('touchend', () => kickBall(false));
 }
 
-document.getElementById('fullscreen').addEventListener('click', () => {
+elements.fullscreenButton.addEventListener('click', () => {
     if (!document.fullscreenElement) {
-              document.documentElement.requestFullscreen();
+        document.documentElement.requestFullscreen();
     } else {
         if (document.exitFullscreen) {
             document.exitFullscreen();
@@ -55,7 +64,7 @@ setInterval(() => {
 
     socket.emit("ping", () => {
         const duration = Date.now() - start;
-        document.getElementById('ping').textContent = `${duration > 999 ? 999 : duration}ms`;
+        elements.ping.textContent = `${duration > 999 ? 999 : duration}ms`;
     });
 }, 1000);
 
@@ -79,10 +88,7 @@ socket.on('colors', (data) => {
 });
 
 socket.on('chat', (data) => {
-    const entity = data.entity;
-    const content = data.content;
-
-    const chat = document.getElementById('chatMessages');
+    const { entity, content } = data;
     const message = document.createElement('p');
     
     const nickname = document.createElement('span');
@@ -99,40 +105,38 @@ socket.on('chat', (data) => {
         message.appendChild(document.createTextNode(' ' + content.body.text));
     }
 
-    chat.appendChild(message);
-
-    chat.scrollTop = chat.scrollHeight;
+    elements.chat.appendChild(message);
+    elements.chat.scrollTop = elements.chat.scrollHeight;
 });
 
 socket.on('goal', (data) => {
-    const goalOverlay = document.getElementById('goalOverlay');
-    const goal = document.getElementById('goal');
-    const author = document.getElementById('author');
+    const { team, author: goalAuthor } = data;
     
-    goal.style.color = teamColors[data.team][0];
-    goal.style.textShadow = `3px 3px 0px ${teamColors[data.team][1]}, 5px 5px 5px #000000`;
-    goalOverlay.style.display = 'flex';
+    elements.goal.style.color = teamColors[team][0];
+    elements.goal.style.textShadow = `3px 3px 0px ${teamColors[team][1]}, 5px 5px 5px #000000`;
+    elements.goalOverlay.style.display = 'flex';
 
-    author.textContent = `${data.author.nickname} ${data.team === data.author.team ? '' : '(o.g.)' }`;
-    author.style.color = teamColors[data.team][1];
-    author.style.backgroundColor = teamColors[data.team][0];
+    elements.author.textContent = `${goalAuthor.nickname} ${team === goalAuthor.team ? '' : '(o.g.)' }`;
+    elements.author.style.color = teamColors[team][1];
+    elements.author.style.backgroundColor = teamColors[team][0];
     
     setTimeout(() => {
-        goalOverlay.style.display = 'none';
+        elements.goalOverlay.style.display = 'none';
     }, 1000);
 });
 
 function sendMessage() {
-    if (inputMessage.value.trim() !== "") {
-        socket.emit('chat', { type: 'message', body: { text: inputMessage.value.trim() }});
-        inputMessage.value = '';
+    const messageText = elements.inputMessage.value.trim();
+    if (messageText !== "") {
+        socket.emit('chat', { type: 'message', body: { text: messageText }});
+        elements.inputMessage.value = '';
     }
 
-    inputMessage.blur();
+    elements.inputMessage.blur();
 }
 
 function drawGame() {
-    document.getElementById('score').textContent = `${score.home}:${score.away}`;
+    elements.score.textContent = `${score.home}:${score.away}`;
     
     updatePlayerElements();
     updateBallElement();
@@ -143,41 +147,43 @@ function drawGame() {
 }
 
 function updatePlayerElements() {
-    const fragment = document.createDocumentFragment();  // Use fragment
+    const fragment = document.createDocumentFragment();
+    const existingPlayerIds = new Set();
 
     for (const id in players) {
         const player = players[id];
+        existingPlayerIds.add(id);
 
-        if (player.team) {
-            let playerDiv = document.getElementById(`player-${id}`);
+        if (!player.team) continue;
 
-            if (!playerDiv) {
-                playerDiv = document.createElement('div');
-                playerDiv.className = 'player';
-                playerDiv.id = `player-${id}`;
-                playerDiv.style.backgroundColor = player.color;
+        let playerDiv = document.getElementById(`player-${id}`);
 
-                const nickname = document.createElement('p');
-                nickname.className = 'nickname';
-                nickname.textContent = player.nickname;
-                nickname.style.color = teamColors[player.team][1];
-                nickname.style.backgroundColor = teamColors[player.team][0];
+        if (!playerDiv) {
+            playerDiv = document.createElement('div');
+            playerDiv.className = 'player';
+            playerDiv.id = `player-${id}`;
+            playerDiv.style.backgroundColor = player.color;
 
-                playerDiv.appendChild(nickname);
-                fragment.appendChild(playerDiv);
-            }
+            const nickname = document.createElement('p');
+            nickname.className = 'nickname';
+            nickname.textContent = player.nickname;
+            nickname.style.color = teamColors[player.team][1];
+            nickname.style.backgroundColor = teamColors[player.team][0];
 
-            playerDiv.style.left = `${player.x - player.radius}px`;
-            playerDiv.style.top = `${player.y - player.radius}px`;
+            playerDiv.appendChild(nickname);
+            fragment.appendChild(playerDiv);
         }
+
+        playerDiv.style.left = `${player.x - player.radius}px`;
+        playerDiv.style.top = `${player.y - player.radius}px`;
     }
 
-    pitch.appendChild(fragment);
+    elements.pitch.appendChild(fragment);
 
     const playerDivs = document.querySelectorAll('[id^="player-"]');
     playerDivs.forEach(playerDiv => {
         const id = playerDiv.id.replace('player-', '');
-        if (!(id in players)) {
+        if (!existingPlayerIds.has(id)) {
             playerDiv.remove();
         }
     });
@@ -190,7 +196,7 @@ function updateBallElement() {
         ballDiv = document.createElement('div');
         ballDiv.className = 'ball';
         ballDiv.id = 'ball';
-        pitch.appendChild(ballDiv);
+        elements.pitch.appendChild(ballDiv);
     }
 
     ballDiv.style.transform = `rotate(${ball.angle}rad)`;
@@ -207,28 +213,28 @@ function updateCamera(player, ball) {
         const distanceY = Math.abs(playerY - ball.y);
 
         if (distanceX > screen.width || distanceY > screen.height) {
-            targetX = playerX - camera.clientWidth / 2;
-            targetY = playerY - camera.clientHeight / 2;
+            targetX = playerX - elements.camera.clientWidth / 2;
+            targetY = playerY - elements.camera.clientHeight / 2;
         } else {
             const midX = (playerX + ball.x) / 2;
             const midY = (playerY + ball.y) / 2;
     
-            targetX = midX - camera.clientWidth / 2;
-            targetY = midY - camera.clientHeight / 2;
+            targetX = midX - elements.camera.clientWidth / 2;
+            targetY = midY - elements.camera.clientHeight / 2;
         }
     } else {
-        targetX = ball.x - camera.clientWidth / 2;
-        targetY = ball.y - camera.clientHeight / 2;
+        targetX = ball.x - elements.camera.clientWidth / 2;
+        targetY = ball.y - elements.camera.clientHeight / 2;
     }
 
     cameraX = lerp(cameraX, targetX, 0.1);
     cameraY = lerp(cameraY, targetY, 0.1);
 
-    const maxX = gameArea.clientWidth - camera.clientWidth;
-    const maxY = gameArea.clientHeight - camera.clientHeight;
+    const maxX = elements.gameArea.clientWidth - elements.camera.clientWidth;
+    const maxY = elements.gameArea.clientHeight - elements.camera.clientHeight;
 
-    gameArea.style.left = `-${Math.max(0, Math.min(cameraX, maxX))}px`;
-    gameArea.style.top = `-${Math.max(0, Math.min(cameraY, maxY))}px`;
+    elements.gameArea.style.left = `-${Math.max(0, Math.min(cameraX, maxX))}px`;
+    elements.gameArea.style.top = `-${Math.max(0, Math.min(cameraY, maxY))}px`;
 }
 
 function lerp(start, end, t) {
@@ -236,7 +242,7 @@ function lerp(start, end, t) {
 }
 
 document.addEventListener('keydown', function(event) {
-    if (inputMessage === document.activeElement) return;
+    if (elements.inputMessage === document.activeElement) return;
 
     if (event.key === ' ') {
         kickBall(true);
@@ -247,17 +253,17 @@ document.addEventListener('keydown', function(event) {
 
 document.addEventListener('keyup', function(event) {
     if (event.key.toLowerCase() === 't') { 
-        keysPressed = [];
-        inputMessage.focus();
+        keysPressed = {};
+        elements.inputMessage.focus();
         return;
     }
     
-    if (event.key === 'Enter' && inputMessage === document.activeElement) {
+    if (event.key === 'Enter' && elements.inputMessage === document.activeElement) {
         sendMessage();
         return;
     }
 
-    if (inputMessage === document.activeElement) return;
+    if (elements.inputMessage === document.activeElement) return;
 
     if (event.key === ' ') {
         kickBall(false);
@@ -286,13 +292,13 @@ function movePlayer() {
     }
     
     if (kickPressed) {      
-      const player = players[socket.id];
-      const detectionRange = player.radius + ball.radius + player.range
+        const player = players[socketId];
+        const detectionRange = player.radius + ball.radius + player.range;
 
-      if (distanceBetween(player.x, player.y, ball.x, ball.y) <= detectionRange) {
-        socket.emit('kick');
-        kickPressed = false;
-      }
+        if (distanceBetween(player.x, player.y, ball.x, ball.y) <= detectionRange) {
+            socket.emit('kick');
+            kickPressed = false;
+        }
     }
 }
 
@@ -308,7 +314,7 @@ function calculateAngle() {
     if (keysPressed['w'] && keysPressed['a']) return 5 * Math.PI / 4;
     if (keysPressed['w'] && keysPressed['d']) return -Math.PI / 4;
     if (keysPressed['s'] && keysPressed['a']) return 3 * Math.PI / 4;
-    if (keysPressed['s'] && keysPressed['d']) return Math.PI / 4
+    if (keysPressed['s'] && keysPressed['d']) return Math.PI / 4;
 
     if (keysPressed['w']) return -Math.PI / 2;
     if (keysPressed['a']) return Math.PI;
