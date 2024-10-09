@@ -17,17 +17,17 @@ body {
 }
 
 #ping {
-    position: absolute;
-    top: 60px;
+    position: fixed;
     left: 50%;
     transform: translateX(-50%);
+    bottom: 20px;
     color: #ffffff;
     font-weight: 600;
     z-index: 5;
 }
 
 i {
-    position: absolute;
+    position: fixed;
     top: 20px;
     right: 20px;
     color: #ffffff;
