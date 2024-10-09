@@ -34,7 +34,7 @@ let ball = {
     radius: 10,
     velocityX: 0,
     velocityY: 0,
-    friction: 0.982,
+    friction: 0.981,
     acceleration: 0.3,
     mass: 1,
     angle: 0,
