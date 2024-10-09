@@ -267,15 +267,15 @@ document.addEventListener('keyup', function(event) {
 });
 
 function kickBall(state) {
-  const player = document.getElementById(`player-${socketId}`);
-  
-  if (state) {
-    kickPressed = true;
-    player.style.boxShadow = '0 0 0 10px rgba(255, 255, 255, 0.1)';
-  } else {
-    kickPressed = false;
-    player.style.boxShadow = 'none';
-  }
+    const player = document.getElementById(`player-${socketId}`);
+    
+    if (state) {
+        kickPressed = true;
+        player.classList.add('player-active');
+    } else {
+        kickPressed = false;
+        player.classList.remove('player-active');
+    }
 }
 
 function movePlayer() {
