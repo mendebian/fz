@@ -1,8 +1,9 @@
-const socket = io(sessionStorage.getItem("serverAddress"));
+const setup = JSON.parse(sessionStorage.getItem("setupData"));
+
+const socket = io(setup.serverAddress);
 const gameArea = document.getElementById('gameArea');
 const pitch = document.getElementById('pitch');
 const camera = document.getElementById('camera');
-const controller = /Mobi|Android/i.test(navigator.userAgent) ? 'touch' : 'keyboard';
 const inputMessage = document.getElementById('inputMessage');
 
 let socketId = null;
@@ -13,8 +14,30 @@ let keysPressed = {}, kickPressed = false;
 let stickAngle = null; 
 let teamColors = null;
 
-if (controller === 'touch') {
-    setupTouchControls();
+if (setup.mobileControls) {
+    const controller = setup.mobileControls;
+    
+    new JoyStick('joy', {}, function (stickData) {
+        if (Math.abs(stickData.x) > 5 || Math.abs(stickData.y) > 5) { 
+            stickAngle = Math.atan2(-stickData.y, stickData.x);
+        } else {
+            stickAngle = null;
+        }
+    });
+    
+    const joy = document.getElementById('joy');
+    joy.style.opacity = `${controller.opacity}%`;
+    joy.style.left = `${controller.margin}px`;
+    joy.style.bottom = `${controller.margin}px`;
+    
+    const kick = document.getElementById('kick');
+    kick.style.opacity = `${controller.opacity}%`;
+    kick.style.right = `${parseFloat(controller.margin) + 15}px`;
+    kick.style.bottom = `${parseFloat(controller.margin) + 15}px`;
+    kick.style.display = 'flex';
+    
+    kick.addEventListener('touchstart', () => kickBall(true));
+    kick.addEventListener('touchend', () => kickBall(false));
 }
 
 setInterval(() => {
@@ -26,30 +49,6 @@ setInterval(() => {
     });
 }, 1000);
 
-function setupTouchControls() {
-    const fullscreen = document.getElementById('fullscreen');
-    const kick = document.getElementById('kick');
-
-    fullscreen.style.display = 'flex';
-    kick.style.display = 'flex';
-
-    fullscreen.addEventListener('click', function () {
-        document.documentElement.webkitRequestFullscreen();
-        fullscreen.style.display = 'none';
-    });
-
-    new JoyStick('joy', {}, function (stickData) {
-        if (Math.abs(stickData.x) > 5 || Math.abs(stickData.y) > 5) { 
-            stickAngle = Math.atan2(-stickData.y, stickData.x);
-        } else {
-            stickAngle = null;
-        }
-    });
-
-    kick.addEventListener('touchstart', () => kickBall(true));
-    kick.addEventListener('touchend', () => kickBall(false));
-}
-
 socket.on('connect', () => {
     socket.emit('playerData', JSON.parse(sessionStorage.getItem("playerData")));
     socketId = socket.id;
@@ -59,7 +58,6 @@ socket.on('update', (data) => {
     players = data.players;
     ball = data.ball;
     score = data.score;
-    drawGame();
 });
 
 socket.on('colors', (data) => {
@@ -135,6 +133,8 @@ function drawGame() {
 }
 
 function updatePlayerElements() {
+    const fragment = document.createDocumentFragment();  // Use fragment
+
     for (const id in players) {
         const player = players[id];
 
@@ -145,26 +145,26 @@ function updatePlayerElements() {
                 playerDiv = document.createElement('div');
                 playerDiv.className = 'player';
                 playerDiv.id = `player-${id}`;
-    
                 playerDiv.style.backgroundColor = player.color;
-                
+
                 const nickname = document.createElement('p');
                 nickname.className = 'nickname';
                 nickname.textContent = player.nickname;
                 nickname.style.color = teamColors[player.team][1];
                 nickname.style.backgroundColor = teamColors[player.team][0];
-    
+
                 playerDiv.appendChild(nickname);
-                pitch.appendChild(playerDiv);
+                fragment.appendChild(playerDiv);  // Adicione ao fragment
             }
-    
+
             playerDiv.style.left = `${player.x - player.radius}px`;
             playerDiv.style.top = `${player.y - player.radius}px`;
         }
     }
 
-    const playerDivs = document.querySelectorAll('[id^="player-"]');
+    pitch.appendChild(fragment);  // Adicione tudo ao DOM de uma vez
 
+    const playerDivs = document.querySelectorAll('[id^="player-"]');
     playerDivs.forEach(playerDiv => {
         const id = playerDiv.id.replace('player-', '');
         if (!(id in players)) {
@@ -271,6 +271,10 @@ function kickBall(state) {
 function movePlayer() {
     const angle = calculateAngle();
     
+    if (angle !== null) {
+        socket.emit('move', angle);
+    }
+    
     if (kickPressed) {      
       const player = players[socket.id];
       const detectionRange = player.radius + ball.radius + player.range
@@ -279,10 +283,6 @@ function movePlayer() {
         socket.emit('kick');
         kickPressed = false;
       }
-    }
-    
-    if (angle !== null) {
-        socket.emit('move', { direction: angle, speed: 2.8 });
     }
 }
 
@@ -293,7 +293,7 @@ function distanceBetween(x1, y1, x2, y2) {
 }
 
 function calculateAngle() {
-    if (controller === 'touch' && stickAngle !== null) return stickAngle;
+    if (setup.mobileControls && stickAngle !== null) return stickAngle;
     
     if (keysPressed['w'] && keysPressed['a']) return 5 * Math.PI / 4;
     if (keysPressed['w'] && keysPressed['d']) return -Math.PI / 4;
@@ -308,4 +308,10 @@ function calculateAngle() {
     return null;
 }
 
-setInterval(movePlayer, 1000 / 60);
+function gameLoop() {
+    movePlayer(); 
+    drawGame();  
+    requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);
