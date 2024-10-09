@@ -26,10 +26,10 @@ body {
     z-index: 5;
 }
 
-svg {
+i {
     position: absolute;
     top: 20px;
-    right: 20%;
+    right: 20px;
     color: #ffffff;
     font-size: 1.5rem;
 }
