@@ -35,7 +35,7 @@ let ball = {
     velocityX: 0,
     velocityY: 0,
     friction: 0.982,
-    acceleration: 0.4,
+    acceleration: 0.3,
     mass: 1,
     angle: 0,
     active: true,
@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
 
         socket.on('move', (angle) => {
             const player = players[socket.id];
-            const speed = 3;
+            const speed = 2;
             
             player.x += Math.cos(angle) * speed;
             player.y += Math.sin(angle) * speed;
