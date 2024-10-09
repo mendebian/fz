@@ -140,6 +140,10 @@ i {
     border: solid 3px #00000050;
 }
 
+.player-active {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.1);
+}
+    
 .nickname {
     position: absolute;
     padding: 1px 3px;
