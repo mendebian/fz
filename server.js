@@ -304,7 +304,7 @@ function gameLoop() {
     updatePhysics();
     io.emit('update', { players, ball, score });
 
-    setTimeout(gameLoop, 1000 / 60);
+    setTimeout(gameLoop, 1000 / 120);
 }
 
 gameLoop();
