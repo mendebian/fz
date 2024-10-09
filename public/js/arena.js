@@ -55,7 +55,7 @@ setInterval(() => {
 
     socket.emit("ping", () => {
         const duration = Date.now() - start;
-        document.getElementById('ping').textContent = `Ping ${duration > 999 ? 999 : duration}`;
+        document.getElementById('ping').textContent = `${duration > 999 ? 999 : duration}ms`;
     });
 }, 1000);
 
