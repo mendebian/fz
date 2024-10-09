@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="/manifest.json">
     <title>FZ</title>
     <style>
         * {
@@ -40,6 +41,13 @@
             overflow: hidden;
         }
 
+        main > p {
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    
         input {
             border: none;
             outline: none;
@@ -63,7 +71,7 @@
             background-color: #ffffff7e;
         }
     
-        #start {
+        #start, #install {
             padding: 0.5rem;
             border-radius: 5px;
             font-weight: 600;
@@ -71,6 +79,17 @@
             background-color: #000000;
         }
 
+        #more {
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+    
+        #more > div {
+            display: flex;
+            flex-direction: column;
+            padding: 4px 0px;
+        }
     </style>
 </head>
 <body>
@@ -83,8 +102,58 @@
             </div>
         </div>
         <input id="start" type="button" value="Continue">
+        <input id="install" type="button" value="Install app">
+        <p><input id="mobile" type="checkbox" value="mobile"> Mobile controller</p>
+        <div id="more">
+            <div>
+                <p>Opacity</p>
+                <input id="controllerOpacity" type="range" min="10" max="100" value="50">
+            </div>
+            <div>
+                <p>Margin</p>
+                <input id="controllerMargin" type="range" min="10" max="100" value="50">
+            </div>
+        </div>
     </main>
     <script>
+        let install = document.getElementById('install');
+        let more = document.getElementById('more');
+        let mobile = document.getElementById('mobile');
+    
+        if (window.matchMedia('(display-mode: fullscreen)').matches) {
+            document.getElementById('install').style.display = 'none';
+        }
+    
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+            more.style.display = 'block';
+            mobile.checked = true;
+        } else {
+            more.style.display = 'none';
+        }
+    
+        mobile.addEventListener('click', () => {
+            if (mobile.checked) {
+                more.style.display = 'block';
+            } else {
+                more.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          const deferredPrompt = e;
+            
+          install.style.display = 'block';
+
+          install.onclick = () => {
+            install.style.display = 'none';
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => {
+              deferredPrompt = null;
+            });
+          };
+        });
+        
         document.getElementById('colorDiv').addEventListener('click', () => {
             document.getElementById('color').click(); 
         });
@@ -98,9 +167,20 @@
             const server = document.getElementById('server').value;
             
             if (nickname && server) {
+                let setupData = {};
+                
+                setupData.serverAddress = server;
+                
+                if (mobile.checked) {
+                    setupData.mobileControls = {
+                        opacity: document.getElementById('controllerOpacity').value,
+                        margin: document.getElementById('controllerMargin').value
+                    }
+                }
+                
                 const playerData = { nickname: nickname, color: document.getElementById('color').value };
                 sessionStorage.setItem("playerData", JSON.stringify(playerData));
-                sessionStorage.setItem("serverAddress", server);
+                sessionStorage.setItem("setupData", JSON.stringify(setupData));
                 window.location.href = "pages/arena.html";
             } else {
                 alert("Invalid nickname or server.");
