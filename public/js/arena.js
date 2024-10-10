@@ -327,7 +327,9 @@ function calculateAngle() {
 function gameLoop() {
     movePlayer(); 
     drawGame();  
-    requestAnimationFrame(gameLoop);
+    //requestAnimationFrame(gameLoop);
+    gameLoop();
 }
 
-requestAnimationFrame(gameLoop);
+//requestAnimationFrame(gameLoop);
+gameLoop();
