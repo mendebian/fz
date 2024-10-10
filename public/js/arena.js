@@ -328,7 +328,7 @@ function gameLoop() {
     movePlayer(); 
     drawGame();  
     //requestAnimationFrame(gameLoop);
-    gameLoop();
+    setTimeout(gameLoop, 1000 / 60);
 }
 
 //requestAnimationFrame(gameLoop);
