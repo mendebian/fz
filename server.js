@@ -87,7 +87,7 @@ io.on('connection', (socket) => {
 
         socket.on("ping", callback => callback());
         
-        io.emit('colors', { home: ['#FFED00', '#00417F'], away: ['#A90432', '#FDB912'] });
+        io.emit('colors', { home: ['#F0EB9A', '#0F1D41'], away: ['#CE0E2D', '#FFFFFF'] });
         io.emit('chat', { entity: players[socket.id], content: { type: 'connection', connected: true } });
         socket.emit('update', { players, ball, score });
         socket.broadcast.emit('update', { players, ball, score });
@@ -113,7 +113,7 @@ io.on('connection', (socket) => {
 
             if (distanceToBall <= detectionRange) {
                 const angle = Math.atan2(ball.y - player.y, ball.x - player.x);
-                const kickForce = 8;
+                const kickForce = 10;
                 
                 ball.velocityX += Math.cos(angle) * kickForce;
                 ball.velocityY += Math.sin(angle) * kickForce;
@@ -308,6 +308,7 @@ function gameLoop() {
 }
 
 gameLoop();
+//setInterval(gameLoop, 1000 / 120);
 
 server.listen(3000, () => {
     console.log('Server is running...');
