@@ -239,8 +239,6 @@ function updateBallPhysics() {
     }
 }
 
-consegue compreender este código?
-
 function goalEvent(team) {
     if (ball.active) {
         ball.active = false;
