@@ -177,10 +177,10 @@ function updateBallPhysics() {
     ball.angle += Math.sqrt(ball.velocityX**2 + ball.velocityY**2) / ball.radius * (ball.velocityX >= 0 ? 1 : -1);
 
     if (ball.x + ball.radius > pitch.width + pitch.marginX) {
-        if (ball.y - ball.radius > (pitch.height / 2) + pitch.marginY - pitch.goalSide + 3 && ball.y + ball.radius < (pitch.height / 2) + pitch.marginY + pitch.goalSide - 3) {
-            if (ball.x + ball.radius > pitch.width + pitch.marginX + (ball.radius * 2)) {
+        if (ball.y - ball.radiu > (pitch.height / 2) + pitch.marginY - pitch.goalSide && ball.y + ball.radius < (pitch.height / 2) + pitch.marginY + pitch.goalSide) {
+            /*if (ball.x + ball.radius > pitch.width + pitch.marginX + (ball.radius * 2)) {
                 goalEvent("home");
-            }
+            }*/
 
             if (ball.x + ball.radius > pitch.width + pitch.marginX + 85) {
                 ball.x = pitch.width + pitch.marginX + 85 - ball.radius;
@@ -203,10 +203,10 @@ function updateBallPhysics() {
     }
 
     if (ball.x - ball.radius < pitch.marginX) {
-        if (ball.y - ball.radius > (pitch.height / 2) + pitch.marginY - pitch.goalSide + 3 && ball.y + ball.radius < (pitch.height / 2) + pitch.marginY + pitch.goalSide - 3) {
-            if (ball.x - ball.radius < pitch.marginX - (ball.radius * 2)) {
+        if (ball.y - ball.radius > (pitch.height / 2) + pitch.marginY - pitch.goalSide && ball.y + ball.radius < (pitch.height / 2) + pitch.marginY + pitch.goalSide) {
+            /*if (ball.x - ball.radius < pitch.marginX - (ball.radius * 2)) {
                 goalEvent("away");
-            }
+            }*/
 
             if (ball.x - ball.radius < pitch.marginX - 85) {
                 ball.x = pitch.marginX - 85 + ball.radius;
