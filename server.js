@@ -35,7 +35,7 @@ let ball = {
     velocityX: 0,
     velocityY: 0,
     friction: 0.978,
-    acceleration: 0.2,
+    acceleration: 0.5,
     mass: 1,
     angle: 0,
     active: true,
@@ -187,15 +187,15 @@ function updateBallPhysics() {
                 ball.velocityX *= -0.5;
             }
 
-            if (ball.y - ball.radius < (pitch.height / 2) + pitch.marginY - pitch.goalSide) {
+            /*if (ball.y - ball.radius < (pitch.height / 2) + pitch.marginY - pitch.goalSide) {
                 ball.y = (pitch.height / 2) + pitch.marginY - pitch.goalSide + ball.radius;
                 ball.velocityY *= -0.5;
             }
-
+            
             if (ball.y + ball.radius > (pitch.height / 2) + pitch.marginY + pitch.goalSide) {
                 ball.y = (pitch.height / 2) + pitch.marginY + pitch.goalSide - ball.radius;
                 ball.velocityY *= -0.5;
-            }
+            }*/
         } else {
             ball.x = pitch.width + pitch.marginX - ball.radius;
             ball.velocityX *= -0.5;
@@ -213,15 +213,15 @@ function updateBallPhysics() {
                 ball.velocityX *= -0.5;
             }
 
-            if (ball.y - ball.radius < (pitch.height / 2) + pitch.marginY - pitch.goalSide) {
+            /*if (ball.y - ball.radius < (pitch.height / 2) + pitch.marginY - pitch.goalSide) {
                 ball.y = (pitch.height / 2) + pitch.marginY - pitch.goalSide + ball.radius;
                 ball.velocityY *= -0.5;
             }
-
+            
             if (ball.y + ball.radius > (pitch.height / 2) + pitch.marginY + pitch.goalSide) {
                 ball.y = (pitch.height / 2) + pitch.marginY + pitch.goalSide - ball.radius;
                 ball.velocityY *= -0.5;
-            }
+            }*/
         } else {
             ball.x = pitch.marginX + ball.radius;
             ball.velocityX *= -0.5;
@@ -238,6 +238,8 @@ function updateBallPhysics() {
         ball.velocityY *= -0.5;
     }
 }
+
+consegue compreender este código?
 
 function goalEvent(team) {
     if (ball.active) {
