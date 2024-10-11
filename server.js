@@ -87,7 +87,7 @@ io.on('connection', (socket) => {
 
         socket.on("ping", callback => callback());
         
-        io.emit('colors', { home: ['#fe1c0c', '#172b8c'], away: ['#ffe600', '#000000'] });
+        io.emit('colors', { home: ['#FFFFFD', '#00529F'], away: ['#004D98', '#A50044'] });
         io.emit('chat', { entity: players[socket.id], content: { type: 'connection', connected: true } });
         socket.emit('update', { players, ball, score });
         socket.broadcast.emit('update', { players, ball, score });
