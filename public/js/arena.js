@@ -77,6 +77,8 @@ socket.on('update', (data) => {
     players = data.players;
     ball = data.ball;
     score = data.score;
+
+    drawGame();
 });
 
 socket.on('colors', (data) => {
@@ -300,6 +302,8 @@ function movePlayer() {
             kickPressed = false;
         }
     }
+
+    setTimeout(movePlayer, 1000 / 60);
 }
 
 function distanceBetween(x1, y1, x2, y2) {
@@ -324,12 +328,4 @@ function calculateAngle() {
     return null;
 }
 
-function gameLoop() {
-    movePlayer(); 
-    drawGame();  
-    //requestAnimationFrame(gameLoop);
-    setTimeout(gameLoop, 1000 / 60);
-}
-
-//requestAnimationFrame(gameLoop);
-gameLoop();
+movePlayer();
