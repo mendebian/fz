@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
 
         socket.on('move', (angle) => {
             const player = players[socket.id];
-            const speed = 3.6;
+            const speed = 2.8;
             
             player.x += Math.cos(angle) * speed;
             player.y += Math.sin(angle) * speed;
