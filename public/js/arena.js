@@ -303,7 +303,7 @@ function movePlayer() {
         }
     }
 
-    setTimeout(movePlayer, 1000 / 60);
+    setTimeout(movePlayer, 1000 / 30);
 }
 
 movePlayer();
