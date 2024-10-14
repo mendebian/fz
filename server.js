@@ -62,7 +62,7 @@ const places = { home: [0, 1, 2], away: [0, 1, 2] };
 io.on('connection', (socket) => {
     socket.on('playerData', (playerData) => {
         if (playerData === null) return socket.disconnect();
-        
+      
         if (places.home.length > 0 ||  places.away.length > 0) {
             const team = places.home.length >= places.away.length ? 'home' : 'away';
             const spawn = places[team].shift();
@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
             players[socket.id] = {
                 x: alignment[team][spawn].x,
                 y: alignment[team][spawn].y,
-                nickname: playerData.nickname,
+                nickname: playerData.nickname.slice(0, 24),
                 color: playerData.color,
                 radius: 20,
                 mass: 2,
@@ -81,7 +81,7 @@ io.on('connection', (socket) => {
             };
         } else {
             players[socket.id] = {
-                nickname: playerData.nickname,
+                nickname: playerData.nickname.slice(0, 24),
                 color: playerData.color,
             };
         }
@@ -94,11 +94,8 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('update', { players, ball, score });
     
         socket.on('chat', (data) => {
+            data.body.text = data.body.text.slice(0, 128);
             io.emit('chat', { entity: players[socket.id], content: data });
-            
-            if (data.type === "message") {
-                console.log(`${players[socket.id].nickname}: ${data.body.text}`);
-            }
         });
 
         socket.on('move', (angle) => {
