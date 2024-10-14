@@ -21,6 +21,7 @@ let screen = { width: window.innerWidth, height: window.innerHeight };
 let players = {}, ball = {}, score = {};
 let keysPressed = {}, kickPressed = false;
 let stickAngle = null; 
+let currentAngle = null;
 let teamColors = null;
 
 if (setup.mobileControls) {
@@ -71,6 +72,8 @@ setInterval(() => {
 socket.on('connect', () => {
     socket.emit('playerData', JSON.parse(sessionStorage.getItem("playerData")));
     socketId = socket.id;
+    
+    movePlayer();
 });
 
 socket.on('update', (data) => {
@@ -288,12 +291,13 @@ function kickBall(state) {
 
 function movePlayer() {
     const angle = calculateAngle();
-    
-    if (angle !== null) {
-        socket.emit('move', angle);
+
+    if (angle !== currentAngle) {
+        currentAngle = angle;
+        socket.emit('move', currentAngle);
     }
-    
-    if (kickPressed) {      
+
+    if (kickPressed) {
         const player = players[socketId];
         const detectionRange = player.radius + ball.radius + player.range;
 
@@ -303,10 +307,8 @@ function movePlayer() {
         }
     }
 
-    setTimeout(movePlayer, 1000 / 60);
+    setTimeout(movePlayer, 1000 / 30);
 }
-
-movePlayer();
 
 function distanceBetween(x1, y1, x2, y2) {
     const dx = x1 - x2;
