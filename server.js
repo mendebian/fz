@@ -76,7 +76,8 @@ io.on('connection', (socket) => {
                 mass: 2,
                 range: 10,
                 team: team,
-                spawn: spawn
+                spawn: spawn,
+                angle: null
             };
         } else {
             players[socket.id] = {
@@ -94,20 +95,23 @@ io.on('connection', (socket) => {
     
         socket.on('chat', (data) => {
             io.emit('chat', { entity: players[socket.id], content: data });
+            
+            if (data.type === "message") {
+                console.log(`${players[socket.id].nickname}: ${data.body.text}`);
+            }
         });
 
         socket.on('move', (angle) => {
             const player = players[socket.id];
-            const speed = 2.8;
-            
-            player.x += Math.cos(angle) * speed;
-            player.y += Math.sin(angle) * speed;
-    
-            io.emit('update', { players, ball, score });
+            if (player) {
+                player.angle = (angle !== null) ? angle : null;
+            }
         });
     
         socket.on('kick', () => {
             const player = players[socket.id];
+            if (!player) return;
+
             const distanceToBall = distanceBetween(player.x, player.y, ball.x, ball.y);
             const detectionRange = player.radius + ball.radius + player.range;
 
@@ -117,20 +121,20 @@ io.on('connection', (socket) => {
                 
                 ball.velocityX += Math.cos(angle) * kickForce;
                 ball.velocityY += Math.sin(angle) * kickForce;
-    
+
                 ball.lastKick = player;
-    
+
                 io.emit('update', { players, ball, score });
             }
         });
     
         socket.on('disconnect', () => {
             const player = players[socket.id];
-    
-            if (player.team) places[player.team].push(player.spawn);
+
+            if (player && player.team) places[player.team].push(player.spawn);
             
             delete players[socket.id];
-    
+
             io.emit('update', { players, ball, score });
             io.emit('chat', { entity: player, content: { type: 'connection', connected: false } });
         });
@@ -186,16 +190,6 @@ function updateBallPhysics() {
                 ball.x = pitch.width + pitch.marginX + 85 - ball.radius;
                 ball.velocityX *= -0.5;
             }
-
-            /*if (ball.y - ball.radius < (pitch.height / 2) + pitch.marginY - pitch.goalSide) {
-                ball.y = (pitch.height / 2) + pitch.marginY - pitch.goalSide + ball.radius;
-                ball.velocityY *= -0.5;
-            }
-            
-            if (ball.y + ball.radius > (pitch.height / 2) + pitch.marginY + pitch.goalSide) {
-                ball.y = (pitch.height / 2) + pitch.marginY + pitch.goalSide - ball.radius;
-                ball.velocityY *= -0.5;
-            }*/
         } else {
             ball.x = pitch.width + pitch.marginX - ball.radius;
             ball.velocityX *= -0.5;
@@ -212,16 +206,6 @@ function updateBallPhysics() {
                 ball.x = pitch.marginX - 85 + ball.radius;
                 ball.velocityX *= -0.5;
             }
-
-            /*if (ball.y - ball.radius < (pitch.height / 2) + pitch.marginY - pitch.goalSide) {
-                ball.y = (pitch.height / 2) + pitch.marginY - pitch.goalSide + ball.radius;
-                ball.velocityY *= -0.5;
-            }
-            
-            if (ball.y + ball.radius > (pitch.height / 2) + pitch.marginY + pitch.goalSide) {
-                ball.y = (pitch.height / 2) + pitch.marginY + pitch.goalSide - ball.radius;
-                ball.velocityY *= -0.5;
-            }*/
         } else {
             ball.x = pitch.marginX + ball.radius;
             ball.velocityX *= -0.5;
@@ -242,7 +226,7 @@ function updateBallPhysics() {
 function goalEvent(team) {
     if (ball.active) {
         ball.active = false;
-        score[team] = score[team] + 1;
+        score[team] += 1;
         io.emit('goal', { team: team, author: ball.lastKick });
         
         setTimeout(() => {
@@ -302,6 +286,16 @@ function updatePhysics() {
 
 function gameLoop() {
     updatePhysics();
+
+    Object.keys(players).forEach((id) => {
+        const player = players[id];
+        if (player.angle !== null) {
+            const speed = 2.8;
+            player.x += Math.cos(player.angle) * speed;
+            player.y += Math.sin(player.angle) * speed;
+        }
+    });
+
     io.emit('update', { players, ball, score });
 
     setTimeout(gameLoop, 1000 / 60);
