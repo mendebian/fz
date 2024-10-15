@@ -292,7 +292,7 @@ io.on('connection', (socket) => {
     }
 
     socket.on('chat', (data) => {
-      if (data.body && data.text) {
+      if (data.body && data.body.text) {
         data.body.text = data.body.text.slice(0, 128);
         io.to( ).emit('chat', { entity: room.players[socket.id], content: data });
       }
