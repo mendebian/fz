@@ -229,7 +229,7 @@ function gameLoop(roomId) {
   Object.keys(room.players).forEach((id) => {
     const player = room.players[id];
     if (player.angle !== null) {
-      const speed = 2.8;
+      const speed = 2.4;
       player.x += Math.cos(player.angle) * speed;
       player.y += Math.sin(player.angle) * speed;
     }
@@ -264,7 +264,7 @@ io.on('connection', (socket) => {
         nickname: nickname.slice(0, 24),
         color: color,
         radius: 20,
-        mass: 2,
+        mass: 4,
         range: 10,
         team: team,
         spawn: spawn,
@@ -295,7 +295,9 @@ io.on('connection', (socket) => {
       data.body.text = data.body.text.slice(0, 128);
       io.to(roomId).emit('chat', { entity: room.players[socket.id], content: data });
     });
-
+    
+    socket.on("ping", callback => callback());
+    
     socket.on('move', (angle) => {
       const player = room.players[socket.id];
       if (player) {
@@ -312,7 +314,7 @@ io.on('connection', (socket) => {
 
       if (distanceToBall <= detectionRange) {
         const angle = Math.atan2(room.ball.y - player.y, room.ball.x - player.x);
-        const kickForce = 10;
+        const kickForce = 8;
         
         room.ball.velocityX += Math.cos(angle) * kickForce;
         room.ball.velocityY += Math.sin(angle) * kickForce;
