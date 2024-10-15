@@ -18,8 +18,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 const rooms = {};
 
 const teamColors = { 
-  home: ['#FFED00', '#00417F'], 
-  away: ['#FDB912', '#A90432'] 
+  home: ['#FDE100', '#000000'], 
+  away: ['#004B9C', '#FFFFFF'] 
 };
 
 function initializeRoom(roomId) {
