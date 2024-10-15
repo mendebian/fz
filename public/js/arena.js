@@ -14,7 +14,7 @@ const elements = {
     joyStick: document.getElementById('joy')
 };
 const setup = JSON.parse(sessionStorage.getItem("setupData"));
-const socket = io(setup.serverAddress);
+const socket = io();
 let socketId = null;
 let cameraX = 0, cameraY = 0;
 let screen = { width: window.innerWidth, height: window.innerHeight };
