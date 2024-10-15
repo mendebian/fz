@@ -292,10 +292,11 @@ io.on('connection', (socket) => {
     }
 
     socket.on('chat', (data) => {
-      if (data.body && data.body.text) {
+      if (data.body.text.length > 128) {
         data.body.text = data.body.text.slice(0, 128);
-        io.to( ).emit('chat', { entity: room.players[socket.id], content: data });
       }
+      
+      io.to( ).emit('chat', { entity: room.players[socket.id], content: data });
     });
     
     socket.on("ping", callback => callback());
@@ -316,7 +317,7 @@ io.on('connection', (socket) => {
 
       if (distanceToBall <= detectionRange) {
         const angle = Math.atan2(room.ball.y - player.y, room.ball.x - player.x);
-        const kickForce = 10;
+        const kickForce = 8;
         
         room.ball.velocityX += Math.cos(angle) * kickForce;
         room.ball.velocityY += Math.sin(angle) * kickForce;
