@@ -285,15 +285,17 @@ io.on('connection', (socket) => {
     });
 
     socket.emit('update', { players: room.players, ball: room.ball, score: room.score });
-
-    if (!room.gameLoopRunning) {
+t
+    if (!room.t) {
       room.gameLoopRunning = true;
       gameLoop(roomId);
     }
 
     socket.on('chat', (data) => {
-      data.body.text = data.body.text.slice(0, 128);
-      io.to(roomId).emit('chat', { entity: room.players[socket.id], content: data });
+      if (data.body && data.text) {
+        data.body.text = data.body.text.slice(0, 128);
+        io.to( ).emit('chat', { entity: room.players[socket.id], content: data });
+      }
     });
     
     socket.on("ping", callback => callback());
@@ -303,7 +305,7 @@ io.on('connection', (socket) => {
       if (player) {
         player.angle = (angle !== null) ? angle : null;
       }
-    });
+    });a   
 
     socket.on('kick', () => {
       const player = room.players[socket.id];
