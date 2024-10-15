@@ -64,7 +64,7 @@
             background-color: transparent;
         }
 
-        #server {
+        #server, #room {
             padding: 0.5rem;
             border-radius: 5px;
             border: solid 1px #0000001a;
@@ -94,7 +94,7 @@
 </head>
 <body>
     <main>
-        <input id="server" type="url" placeholder="Server address" value="http://fz.servegame.com/">
+        <input id="room" type="text" placeholder="Room ID" value="Room #1">
         <div>
             <input id="nickname" type="text" placeholder="Choose your nickname" maxlength="16">
             <div id="colorDiv">
@@ -143,12 +143,10 @@
 
         document.getElementById('start').addEventListener('click', () => {
             const nickname = document.getElementById('nickname').value;
-            const server = document.getElementById('server').value;
+            const room = document.getElementById('room').value;
             
-            if (nickname && server) {
+            if (nickname && room) {
                 let setupData = {};
-                
-                setupData.serverAddress = server;
                 
                 if (mobile.checked) {
                     setupData.mobileControls = {
@@ -157,12 +155,12 @@
                     }
                 }
                 
-                const playerData = { nickname: nickname, color: document.getElementById('color').value };
+                const playerData = { nickname: nickname, color: document.getElementById('color').value, roomId: room };
                 sessionStorage.setItem("playerData", JSON.stringify(playerData));
                 sessionStorage.setItem("setupData", JSON.stringify(setupData));
                 window.location.href = "pages/arena.html";
             } else {
-                alert("Invalid nickname or server.");
+                alert("Invalid server, room or nickname.");
             }
         });
     </script>
