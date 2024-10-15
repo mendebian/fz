@@ -286,7 +286,7 @@ io.on('connection', (socket) => {
 
     socket.emit('update', { players: room.players, ball: room.ball, score: room.score });
 
-    if (!room.t) {
+    if (!room.gameLoopRunning) {
       room.gameLoopRunning = true;
       gameLoop(roomId);
     }
