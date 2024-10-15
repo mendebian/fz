@@ -285,7 +285,7 @@ io.on('connection', (socket) => {
     });
 
     socket.emit('update', { players: room.players, ball: room.ball, score: room.score });
-t
+
     if (!room.t) {
       room.gameLoopRunning = true;
       gameLoop(roomId);
@@ -305,7 +305,7 @@ t
       if (player) {
         player.angle = (angle !== null) ? angle : null;
       }
-    });a   
+    });
 
     socket.on('kick', () => {
       const player = room.players[socket.id];
