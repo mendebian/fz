@@ -292,11 +292,11 @@ io.on('connection', (socket) => {
     }
 
     socket.on('chat', (data) => {
-      if (data.body.text.length > 128) {
+      if (data.body && data.body.text.length > 128) {
         data.body.text = data.body.text.slice(0, 128);
       }
       
-      io.to( ).emit('chat', { entity: room.players[socket.id], content: data });
+      io.to(roomId).emit('chat', { entity: room.players[socket.id], content: data });
     });
     
     socket.on("ping", callback => callback());
