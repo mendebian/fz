@@ -264,7 +264,7 @@ io.on('connection', (socket) => {
         nickname: nickname.slice(0, 24),
         color: color,
         radius: 20,
-        mass: 4,
+        mass: 5,
         range: 10,
         team: team,
         spawn: spawn,
@@ -314,7 +314,7 @@ io.on('connection', (socket) => {
 
       if (distanceToBall <= detectionRange) {
         const angle = Math.atan2(room.ball.y - player.y, room.ball.x - player.x);
-        const kickForce = 8;
+        const kickForce = 10;
         
         room.ball.velocityX += Math.cos(angle) * kickForce;
         room.ball.velocityY += Math.sin(angle) * kickForce;
