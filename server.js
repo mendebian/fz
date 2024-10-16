@@ -45,10 +45,11 @@ function initializeRoom(roomId) {
         velocityY: 0,
         friction: 0.98,
         acceleration: 0.3,
-        mass: 5,
+        mass: 4,
         angle: 0,
         active: true,
-        lastKick: null
+        scorer: null,
+        assister: null
       },
       players: {},
       alignment: {
@@ -90,11 +91,10 @@ function resolveCollision(x1, y1, radius1, x2, y2, radius2, mass1, mass2) {
     const angle = Math.atan2(y2 - y1, x2 - x1);
 
     const force = (mass1 + mass2) / 2;
-    const correctionFactor = 0.5;
 
     return {
-      x: Math.cos(angle) * overlap * force * correctionFactor,
-      y: Math.sin(angle) * overlap * force * correctionFactor
+      x: Math.cos(angle) * overlap * force * 0.1,
+      y: Math.sin(angle) * overlap * force * 0.1
     };
   }
 
@@ -125,7 +125,7 @@ function updateBallPhysics(room) {
             }
         } else {
             ball.x = pitch.width + pitch.marginX - ball.radius;
-            ball.velocityX *= -0.4;;
+            ball.velocityX *= -0.4;
         }
     }
 
@@ -160,7 +160,7 @@ function goalEvent(room, team) {
   if (room.ball.active) {
     room.ball.active = false;
     room.score[team] += 1;
-    io.to(room.roomId).emit('goal', { team: team, author: room.ball.lastKick });
+    io.to(room.roomId).emit('goal', { team: team, scorer: room.ball.scorer, assister: room.ball.assister });
 
     setTimeout(() => {
       room.ball.x = (room.pitch.width / 2) + room.pitch.marginX;
@@ -181,7 +181,9 @@ function goalEvent(room, team) {
         room.score.home = 0;
         room.score.away = 0;
       }
-
+      
+      room.ball.assister = null;
+      room.ball.scorer = null;
       room.ball.active = true;
     }, 2000);
   }
@@ -265,7 +267,7 @@ io.on('connection', (socket) => {
         y: room.alignment[team][spawn].y,
         nickname: nickname.slice(0, 24),
         radius: 20,
-        mass: 4,
+        mass: 10,
         range: 10,
         team: team,
         spawn: spawn,
@@ -327,7 +329,8 @@ io.on('connection', (socket) => {
         room.ball.velocityX += Math.cos(angle) * kickForce;
         room.ball.velocityY += Math.sin(angle) * kickForce;
 
-        room.ball.lastKick = player;
+        room.ball.assister = room.ball.scorer;
+        room.ball.scorer = { id: socket.id, nickname: player.nickname, team: player.team };
 
         io.to(roomId).emit('update', { players: room.players, ball: room.ball, score: room.score });
       }
@@ -355,4 +358,3 @@ io.on('connection', (socket) => {
 server.listen(3000, () => {
   console.log('Server is running...');
 });
-      
