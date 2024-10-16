@@ -97,9 +97,6 @@
         <input id="room" type="text" placeholder="Room ID" value="Room #1">
         <div>
             <input id="nickname" type="text" placeholder="Choose your nickname" maxlength="16">
-            <div id="colorDiv">
-                <input id="color" type="color" style="display: none;">
-            </div>
         </div>
         <input id="start" type="button" value="Continue">
         <p><input id="mobile" type="checkbox" value="mobile"> Mobile controller</p>
@@ -133,14 +130,6 @@
             }
         });
         
-        document.getElementById('colorDiv').addEventListener('click', () => {
-            document.getElementById('color').click(); 
-        });
-
-        document.getElementById('color').addEventListener('input', function() {
-            document.getElementById('colorDiv').style.backgroundColor = document.getElementById('color').value;
-        });
-
         document.getElementById('start').addEventListener('click', () => {
             const nickname = document.getElementById('nickname').value;
             const room = document.getElementById('room').value;
@@ -155,7 +144,7 @@
                     }
                 }
                 
-                const playerData = { nickname: nickname, color: document.getElementById('color').value, roomId: room };
+                const playerData = { nickname: nickname, roomId: room };
                 sessionStorage.setItem("playerData", JSON.stringify(playerData));
                 sessionStorage.setItem("setupData", JSON.stringify(setupData));
                 window.location.href = "pages/arena.html";
