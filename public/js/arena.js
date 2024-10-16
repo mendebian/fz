@@ -1,8 +1,3 @@
-window.addEventListener('beforeunload', (event) => {
-    event.preventDefault();
-    event.returnValue = '';
-});
-
 const elements = {
     gameArea: document.getElementById('gameArea'),
     pitch: document.getElementById('pitch'),
@@ -75,10 +70,12 @@ setInterval(() => {
 }, 1000);
 
 socket.on('connect', () => {
-    socket.emit('playerData', JSON.parse(sessionStorage.getItem("playerData")));
-    socketId = socket.id;
+    setTimeout(() => {
+        socket.emit('playerData', JSON.parse(sessionStorage.getItem("playerData")));
+        socketId = socket.id;
     
-    movePlayer();
+        movePlayer();
+    }, 5000);
 });
 
 socket.on('update', (data) => {
