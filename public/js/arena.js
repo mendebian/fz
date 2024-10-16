@@ -24,6 +24,10 @@ let stickAngle = null;
 let currentAngle = null;
 let teamColors = null;
 
+window.addEventListener('beforeunload', () => {
+    sessionStorage.clear();
+});
+
 if (setup.mobileControls) {
     const controller = setup.mobileControls;
     
