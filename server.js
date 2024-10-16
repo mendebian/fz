@@ -242,9 +242,9 @@ function gameLoop(roomId) {
 
 io.on('connection', (socket) => {
   socket.on('playerData', (data) => {
-    const { nickname, color, roomId } = data;
+    const { nickname, roomId } = data;
 
-    if (!roomId || !nickname || !color) {
+    if (!roomId || !nickname) {
       socket.disconnect();
       return;
     }
@@ -262,7 +262,6 @@ io.on('connection', (socket) => {
         x: room.alignment[team][spawn].x,
         y: room.alignment[team][spawn].y,
         nickname: nickname.slice(0, 24),
-        color: color,
         radius: 20,
         mass: 5,
         range: 10,
@@ -273,7 +272,6 @@ io.on('connection', (socket) => {
     } else {
       room.players[socket.id] = {
         nickname: nickname.slice(0, 24),
-        color: color,
       };
     }
 
