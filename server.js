@@ -263,7 +263,7 @@ io.on('connection', (socket) => {
         y: room.alignment[team][spawn].y,
         nickname: nickname.slice(0, 24),
         radius: 20,
-        mass: 5,
+        mass: 4,
         range: 10,
         team: team,
         spawn: spawn,
