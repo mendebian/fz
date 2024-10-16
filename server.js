@@ -244,7 +244,7 @@ io.on('connection', (socket) => {
   socket.on('playerData', (data) => {
     const { nickname, color, roomId } = data;
 
-    if (!roomId) {
+    if (!roomId || !nickname || !color) {
       socket.disconnect();
       return;
     }
