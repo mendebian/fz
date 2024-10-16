@@ -11,7 +11,8 @@ const elements = {
     author: document.getElementById('author'),
     fullscreenButton: document.getElementById('fullscreen'),
     kickButton: document.getElementById('kick'),
-    joyStick: document.getElementById('joy')
+    joyStick: document.getElementById('joy'),
+    loader: document.getElementById('loaderOverlay')
 };
 const setup = JSON.parse(sessionStorage.getItem("setupData"));
 const socket = io();
@@ -65,7 +66,7 @@ setInterval(() => {
 
     socket.emit("ping", () => {
         const duration = Date.now() - start;
-        elements.ping.textContent = `${duration > 999 ? 999 : duration}ms`;
+        elements.ping.textContent = `${duration > 999 ? +999 : duration}ms`;
     });
 }, 1000);
 
@@ -75,7 +76,8 @@ socket.on('connect', () => {
         socketId = socket.id;
     
         movePlayer();
-    }, 5000);
+        elements.loader.remove();
+    }, 3000);
 });
 
 socket.on('update', (data) => {
@@ -100,7 +102,6 @@ socket.on('chat', (data) => {
     
     const nickname = document.createElement('span');
     nickname.textContent = entity.nickname;
-    nickname.style.color = entity.color;
     nickname.style.fontWeight = 600;
 
     if (content.type === 'connection') {
@@ -109,7 +110,7 @@ socket.on('chat', (data) => {
         message.appendChild(document.createTextNode(`${content.connected ? ' has joined' : ' has left' }`));
     } else if (content.type === 'message') {
         message.appendChild(nickname);
-        message.appendChild(document.createTextNode(' ' + content.body.text));
+        message.appendChild(document.createTextNode(': ' + content.body.text));
     }
 
     elements.chat.appendChild(message);
@@ -169,14 +170,12 @@ function updatePlayerElements() {
             playerDiv = document.createElement('div');
             playerDiv.className = 'player';
             playerDiv.id = `player-${id}`;
-            playerDiv.style.backgroundColor = player.color;
+            playerDiv.style.backgroundColor = teamColors[player.team][0];
 
             const nickname = document.createElement('p');
             nickname.className = 'nickname';
             nickname.textContent = player.nickname;
-            nickname.style.color = teamColors[player.team][1];
-            nickname.style.backgroundColor = teamColors[player.team][0];
-
+  
             playerDiv.appendChild(nickname);
             fragment.appendChild(playerDiv);
         }
@@ -333,3 +332,4 @@ function calculateAngle() {
 
     return null;
 }
+        
