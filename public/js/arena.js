@@ -118,13 +118,17 @@ socket.on('chat', (data) => {
 });
 
 socket.on('goal', (data) => {
-    const { team, author: goalAuthor } = data;
+    const { team, scorer, assister } = data;
     
     elements.goal.style.color = teamColors[team][0];
     elements.goal.style.textShadow = `3px 3px 0px ${teamColors[team][1]}, 5px 5px 5px #000000`;
     elements.goalOverlay.style.display = 'flex';
 
-    elements.author.textContent = `${goalAuthor.nickname} ${team === goalAuthor.team ? '' : '(o.g.)' }`;
+    elements.author.textContent = scorer 
+      ? `${scorer.nickname} ${team === scorer.team && assister && scorer.team === assister.team && scorer.id !== assister.id 
+          ? `(${assister.nickname})` 
+          : team !== scorer.team ? '(o.g.)' : ''}` 
+      : 'Unknown scorer';
     elements.author.style.color = teamColors[team][1];
     elements.author.style.backgroundColor = teamColors[team][0];
     
