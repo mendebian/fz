@@ -43,9 +43,9 @@ function initializeRoom(roomId) {
         radius: 10,
         velocityX: 0,
         velocityY: 0,
-        friction: 0.978,
+        friction: 0.979,
         acceleration: 0.3,
-        mass: 1,
+        mass: 3,
         angle: 0,
         active: true,
         lastKick: null
