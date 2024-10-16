@@ -75,7 +75,7 @@ socket.on('connect', () => {
         socket.emit('playerData', JSON.parse(sessionStorage.getItem("playerData")));
         socketId = socket.id;
     
-        movePlayer();
+        requestAnimationFrame(movePlayer);
         elements.loader.remove();
     }, 3000);
 });
@@ -308,7 +308,7 @@ function movePlayer() {
         }
     }
 
-    setTimeout(movePlayer, 1000 / 30);
+    requestAnimationFrame(movePlayer);
 }
 
 function distanceBetween(x1, y1, x2, y2) {
