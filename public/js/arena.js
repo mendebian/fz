@@ -1,3 +1,8 @@
+window.addEventListener('beforeunload', (event) => {
+    event.preventDefault();
+    event.returnValue = '';
+});
+
 const elements = {
     gameArea: document.getElementById('gameArea'),
     pitch: document.getElementById('pitch'),
@@ -23,10 +28,6 @@ let keysPressed = {}, kickPressed = false;
 let stickAngle = null; 
 let currentAngle = null;
 let teamColors = null;
-
-window.addEventListener('beforeunload', () => {
-    sessionStorage.clear();
-});
 
 if (setup.mobileControls) {
     const controller = setup.mobileControls;
