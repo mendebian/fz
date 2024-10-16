@@ -43,9 +43,9 @@ function initializeRoom(roomId) {
         radius: 10,
         velocityX: 0,
         velocityY: 0,
-        friction: 0.979,
+        friction: 0.98,
         acceleration: 0.3,
-        mass: 3,
+        mass: 5,
         angle: 0,
         active: true,
         lastKick: null
@@ -53,17 +53,19 @@ function initializeRoom(roomId) {
       players: {},
       alignment: {
         home: [
-          { x: 400 + 200, y: (750 / 2) + 400 },
-          { x: 400 + 300, y: (750 / 2) + 400 - 125 },
-          { x: 400 + 300, y: (750 / 2) + 400 + 125 }
+          { x: 600, y: 775 },
+          { x: 700, y: 650 },
+          { x: 700, y: 900 },
+          { x: 800, y: 775 }
         ],
         away: [
-          { x: 400 + 1100 - 200, y: (750 / 2) + 400 },
-          { x: 400 + 1100 - 300, y: (750 / 2) + 400 - 125 },
-          { x: 400 + 1100 - 300, y: (750 / 2) + 400 + 125 } 
+          { x: 1300, y: 775 },
+          { x: 1200, y: 650 },
+          { x: 1200, y: 900 },
+          { x: 1100, y: 775 }
         ]
       },
-      places: { home: [0, 1, 2], away: [0, 1, 2] },
+      places: { home: [0, 1, 2, 3], away: [0, 1, 2, 3] },
       gameLoopRunning: false
     };
   }
@@ -119,11 +121,11 @@ function updateBallPhysics(room) {
 
             if (ball.x + ball.radius > pitch.width + pitch.marginX + 85) {
                 ball.x = pitch.width + pitch.marginX + 85 - ball.radius;
-                ball.velocityX *= -0.5;
+                ball.velocityX *= -0.3;
             }
         } else {
             ball.x = pitch.width + pitch.marginX - ball.radius;
-            ball.velocityX *= -0.5;
+            ball.velocityX *= -0.4;;
         }
     }
 
@@ -135,22 +137,22 @@ function updateBallPhysics(room) {
 
             if (ball.x - ball.radius < pitch.marginX - 85) {
                 ball.x = pitch.marginX - 85 + ball.radius;
-                ball.velocityX *= -0.5;
+                ball.velocityX *= -0.3;
             }
         } else {
             ball.x = pitch.marginX + ball.radius;
-            ball.velocityX *= -0.5;
+            ball.velocityX *= -0.4;
         }
     }
 
     if (ball.y + ball.radius > pitch.height + pitch.marginY) {
         ball.y = pitch.height + pitch.marginY - ball.radius;
-        ball.velocityY *= -0.5;
+        ball.velocityY *= -0.4;
     }
 
     if (ball.y - ball.radius < pitch.marginY) {
         ball.y = pitch.marginY + ball.radius;
-        ball.velocityY *= -0.5;
+        ball.velocityY *= -0.4;
     }
 }
 
@@ -351,5 +353,6 @@ io.on('connection', (socket) => {
 });
 
 server.listen(3000, () => {
-  console.log('Servidor está rodando na porta 3000');
+  console.log('Server is running...');
 });
+      
