@@ -86,7 +86,7 @@ setInterval(() => {
 
 socket.on('connect', () => {
     setTimeout(() => {
-        socket.emit('joinRoom', JSON.parse(sessionStorage.getItem("metadata")));
+        socket.emit('playerData', JSON.parse(sessionStorage.getItem("playerData")));
         socketId = socket.id;
     
         requestAnimationFrame(movePlayer);
