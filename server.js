@@ -2,30 +2,30 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const { Server } = require('socket.io');
-const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
+const io = new Server(server);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 const rooms = {};
 
-const teamColors = { 
-  home: ['#FDE100', '#000000'], 
-  away: ['#004B9C', '#FFFFFF'] 
-};
+app.get('/rooms', (req, res) => {
+  const roomList = Object.keys(rooms).map(room => ({
+    id: room,
+    name: rooms[room].roomName,
+    count: Object.keys(rooms[room].players).length
+  }));
+  res.json(roomList);
+});
 
-function initializeRoom(roomId) {
-  if (!rooms[roomId]) {
-    rooms[roomId] = {
-      roomId: roomId,
+function initializeRoom(data) {
+  if (!rooms[data.id]) {
+    rooms[data.id] = {
+      roomId: data.id,
+      roomName: data.name,
       pitch: {
         width: 1100,
         height: 750,
@@ -102,57 +102,79 @@ function resolveCollision(x1, y1, radius1, x2, y2, radius2, mass1, mass2) {
 }
 
 function updateBallPhysics(room) {
-  const ball = room.ball;
-  const pitch = room.pitch;
+    const ball = room.ball;
+    const pitch = room.pitch;
 
-  ball.x += ball.velocityX;
-  ball.y += ball.velocityY;
+    ball.x += ball.velocityX;
+    ball.y += ball.velocityY;
 
-  ball.velocityX *= ball.friction;
-  ball.velocityY *= ball.friction;
+    ball.velocityX *= ball.friction;
+    ball.velocityY *= ball.friction;
 
-  ball.angle += Math.sqrt(ball.velocityX**2 + ball.velocityY**2) / ball.radius * (ball.velocityX >= 0 ? 1 : -1);
+    ball.angle += Math.sqrt(ball.velocityX ** 2 + ball.velocityY ** 2) / ball.radius * (ball.velocityX >= 0 ? 1 : -1);
 
-  if (ball.x + ball.radius > pitch.width + pitch.marginX) {
-        if (ball.y - ball.radius > (pitch.height / 2) + pitch.marginY - pitch.goalSide && ball.y + ball.radius < (pitch.height / 2) + pitch.marginY + pitch.goalSide) {
-            if (ball.x + ball.radius > pitch.width + pitch.marginX + (ball.radius * 2)) {
-                goalEvent(room, "home");
+    if (ball.x + ball.radius > pitch.width + pitch.marginX) {
+        if (ball.y - ball.radius > (pitch.height / 2) + pitch.marginY - pitch.goalSide - 10 &&
+            ball.y + ball.radius < (pitch.height / 2) + pitch.marginY + pitch.goalSide + 10) {
+        
+            if (ball.y - ball.radius < (pitch.height / 2) + pitch.marginY - pitch.goalSide) {
+                ball.y = (pitch.height / 2) + pitch.marginY - pitch.goalSide + ball.radius;
+                ball.velocityY = -ball.velocityY * 0.3;
             }
-
+            if (ball.y + ball.radius > (pitch.height / 2) + pitch.marginY + pitch.goalSide) {
+                ball.y = (pitch.height / 2) + pitch.marginY + pitch.goalSide - ball.radius;
+                ball.velocityY = -ball.velocityY * 0.3; 
+            }
             if (ball.x + ball.radius > pitch.width + pitch.marginX + 85) {
                 ball.x = pitch.width + pitch.marginX + 85 - ball.radius;
-                ball.velocityX *= -0.3;
+                ball.velocityX = -ball.velocityX * 0.3;
             }
+            
+            if (ball.x + ball.radius > pitch.width + pitch.marginX + (ball.radius * 2)) {
+                goalEvent(room, "home");
+            }  
         } else {
             ball.x = pitch.width + pitch.marginX - ball.radius;
-            ball.velocityX *= -0.4;
+            ball.velocityX = -ball.velocityX * 0.5; 
         }
     }
 
     if (ball.x - ball.radius < pitch.marginX) {
-        if (ball.y - ball.radius > (pitch.height / 2) + pitch.marginY - pitch.goalSide && ball.y + ball.radius < (pitch.height / 2) + pitch.marginY + pitch.goalSide) {
-            if (ball.x - ball.radius < pitch.marginX - (ball.radius * 2)) {
-                goalEvent(room, "away");
+        if (ball.y - ball.radius > (pitch.height / 2) + pitch.marginY - pitch.goalSide - 10 &&
+            ball.y + ball.radius < (pitch.height / 2) + pitch.marginY + pitch.goalSide + 10) {
+        
+            if (ball.y - ball.radius < (pitch.height / 2) + pitch.marginY - pitch.goalSide) {
+                ball.y = (pitch.height / 2) + pitch.marginY - pitch.goalSide + ball.radius;
+                ball.velocityY = -ball.velocityY * 0.3;
+            }
+        
+            if (ball.y + ball.radius > (pitch.height / 2) + pitch.marginY + pitch.goalSide) {
+                ball.y = (pitch.height / 2) + pitch.marginY + pitch.goalSide - ball.radius;
+                ball.velocityY = -ball.velocityY * 0.3;
             }
 
             if (ball.x - ball.radius < pitch.marginX - 85) {
                 ball.x = pitch.marginX - 85 + ball.radius;
-                ball.velocityX *= -0.3;
+                ball.velocityX = -ball.velocityX * 0.3;
+            }
+
+            if (ball.x - ball.radius < pitch.marginX - (ball.radius * 2)) {
+                goalEvent(room, "away");
             }
         } else {
             ball.x = pitch.marginX + ball.radius;
-            ball.velocityX *= -0.4;
+            ball.velocityX = -ball.velocityX * 0.5;
         }
     }
 
     if (ball.y + ball.radius > pitch.height + pitch.marginY) {
         ball.y = pitch.height + pitch.marginY - ball.radius;
-        ball.velocityY *= -0.4;
+        ball.velocityY = -ball.velocityY * 0.5; 
     }
 
     if (ball.y - ball.radius < pitch.marginY) {
         ball.y = pitch.marginY + ball.radius;
-        ball.velocityY *= -0.4;
+        ball.velocityY = -ball.velocityY * 0.5; 
     }
 }
 
@@ -245,15 +267,17 @@ function gameLoop(roomId) {
 }
 
 io.on('connection', (socket) => {
-  socket.on('playerData', (data) => {
-    const { nickname, roomId } = data;
+  socket.on('joinRoom', (data) => {
+    const { nickname, roomData } = data;
 
-    if (!roomId || !nickname) {
+    if (!roomData || !nickname) {
       socket.disconnect();
       return;
     }
-
-    initializeRoom(roomId);
+    
+    const roomId = roomData.id;
+    
+    initializeRoom(roomData);
     const room = rooms[roomId];
 
     socket.join(roomId);
@@ -278,8 +302,6 @@ io.on('connection', (socket) => {
         nickname: nickname.slice(0, 24),
       };
     }
-
-    io.to(roomId).emit('colors', teamColors);
 
     io.to(roomId).emit('chat', { 
       entity: room.players[socket.id], 
