@@ -53,10 +53,24 @@ if (setup.mobileControls) {
 
 elements.fullscreenButton.addEventListener('click', () => {
     if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+        }
     } else {
         if (document.exitFullscreen) {
             document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
         }
     }
 });
@@ -72,12 +86,12 @@ setInterval(() => {
 
 socket.on('connect', () => {
     setTimeout(() => {
-        socket.emit('playerData', JSON.parse(sessionStorage.getItem("playerData")));
+        socket.emit('joinRoom', JSON.parse(sessionStorage.getItem("metadata")));
         socketId = socket.id;
     
         requestAnimationFrame(movePlayer);
         elements.loader.remove();
-    }, 3000);
+    }, 1500);
 });
 
 socket.on('update', (data) => {
@@ -336,4 +350,3 @@ function calculateAngle() {
 
     return null;
 }
-        
