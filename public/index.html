@@ -3,153 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <link rel="manifest" href="manifest.json">
-    <title>FZ</title>
+    <title>FZ: Futebol 2D Online</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
         }
-        
-        body {
-            height: 100vh;
-            background-image: url('images/bg.jpg');
-            background-size: cover;
-            background-repeat: no-repeat; 
-            background-position: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, Helvetica, sans-serif;
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background-color: #121212;
+            color: #E0E0E0;
         }
 
         main {
-            padding: 10px;
-            background-color: #ffffffde;
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            border-radius: 5px;
+            height: 100%;
+            padding: 1rem;
+            gap: 1rem;
         }
-    
-        main > div {
+
+        #rooms {
+            flex: 1;
             display: flex;
-            border-radius: 5px;
-            border: solid 1px #0000001a;
-            background-color: #ffffff7e;
+            flex-direction: column;
             overflow: hidden;
         }
 
-        main > p {
+        #rooms > p {
+            color: #FF3D00; /* Cor avermelhada */
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(255, 61, 0, 0.7); /* Efeito de brilho */
+        }
+
+        #roomList {
+            flex: 1;
+            overflow-y: auto;
+            border: solid 1px #202020;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: #1E1E1E;
             display: flex;
-            justify-content: left;
+            flex-direction: column;
+            gap: 1rem; 
+        }
+
+        .room-item {
+            width: 100%;
+            color: #E0E0E0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border: 1px solid #202020;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            opacity: 0; /* Inicialmente invisível para animação */
+            animation: fadeIn 0.3s forwards; /* Animação de carregamento */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .room-item:hover {
+            background-color: #2A2A2A;
+        }
+
+        .room-item > p {
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            display: flex;
             align-items: center;
             gap: 0.5rem;
+            flex-grow: 1; 
+            margin-right: 10px;
         }
-    
-        input {
+
+        .room-item > p > span {
+            width: 50px;
+            display: inline-block;
+            text-align: center; 
+        }
+
+        .room-item > p > strong {
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            flex-shrink: 0;
+        }
+        
+        #setup {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        input[type="text"], input[type="button"], button {
+            padding: 10px 12px;
             border: none;
             outline: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
         }
 
-        #colorDiv {
-            height: auto;
-            width: 30px;
-            background-color: #000000;
+        #room, #nickname {
+            background-color: #1E1E1E; /* Fundo do input text */
+            border: solid 1px #202020;
+            color: #E0E0E0;
         }
 
-        #nickname {
-            padding: 0.5rem;
-            background-color: transparent;
+        #createRoom, #refreshRooms {
+            background-color: #E0E0E0;
+            color: #202020;
         }
 
-        #server, #room {
-            padding: 0.5rem;
-            border-radius: 5px;
-            border: solid 1px #0000001a;
-            background-color: #ffffff7e;
+        #createRoom:hover, #refreshRooms:hover {
+            background-color: #D0D0D0;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup {
+            position: relative;
+            display: none;
+            background-color: #2A2A2A;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: solid 1px #202020;
+            color: #E0E0E0;
+            min-width: 300px;
+            max-width: 90%;
+            text-align: center;
+            flex-direction: column;
+            gap: 1rem;
+            transition: opacity 0.3s ease; /* Transição para o popup */
+            opacity: 0;
+            animation: popUp 0.3s forwards; /* Animação de aparecimento */
+        }
+
+        @keyframes popUp {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     
-        #start {
-            padding: 0.5rem;
-            border-radius: 5px;
-            font-weight: 600;
-            color: #ffffff;
-            background-color: #000000;
+        .close-button {
+            background: none;
+            border: none;
+            color: #E0E0E0;
+            font-size: 20px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    
+        .popup > p {
+            margin-bottom: 0.5rem;
+            font-size: 18px;
         }
 
         #more {
-            padding: 0.5rem;
-            display: flex;
-            flex-direction: column;
-        }
-    
-        #more > div {
-            display: flex;
-            flex-direction: column;
-            padding: 4px 0px;
+            display: none;
         }
     </style>
 </head>
 <body>
     <main>
-        <input id="room" type="text" placeholder="Room ID" value="Room #1">
-        <div>
-            <input id="nickname" type="text" placeholder="Choose your nickname" maxlength="16">
+        <div id="rooms">
+            <p>Room List</p>
+            <div id="roomList"></div>
         </div>
-        <input id="start" type="button" value="Continue">
-        <p><input id="mobile" type="checkbox" value="mobile"> Mobile controller</p>
-        <div id="more">
-            <div>
-                <p>Opacity</p>
-                <input id="controllerOpacity" type="range" min="10" max="100" value="50">
-            </div>
-            <div>
-                <p>Margin</p>
-                <input id="controllerMargin" type="range" min="10" max="100" value="50">
-            </div>
+
+        <div id="setup">
+            <input id="refreshRooms" type="button" value="Refresh rooms" onclick="roomList()">
+            <input id="showCreateRoom" type="button" value="Create room" onclick="showPopUp('createRoomPopUp')">
+            <input id="showNickname" type="button" value="Change nickname" onclick="showPopUp('nicknamePopUp')">
+            <input id="showSetup" type="button" value="Setup" onclick="showPopUp('setupPopUp')">
         </div>
     </main>
+
+    <div class="overlay" id="overlay" onclick="closePopUp()">
+        <button onclick="closePopUp()" class="close-button">✖</button>
+        
+        <div class="popup" id="createRoomPopUp" onclick="event.stopPropagation()">
+            <p>New room</p>
+            <input id="room" type="text" placeholder="Room name" maxlength="24">
+            <input id="createRoom" type="button" value="Create">
+        </div>
+
+        <div class="popup" id="nicknamePopUp" onclick="event.stopPropagation()">
+            <p>Choose your nickname</p>
+            <input id="nickname" type="text" placeholder="Nickname" maxlength="16">
+            <input id="changeNickname" type="button" value="Done" onclick="closePopUp()">
+        </div>
+
+        <div class="popup" id="setupPopUp" onclick="event.stopPropagation()">
+            <p><input id="mobile" type="checkbox"> Mobile controller</p>
+            <div id="more">
+                <div>
+                    <p>Opacity</p>
+                    <input id="controllerOpacity" type="range" min="10" max="100" value="50">
+                </div>
+                <div>
+                    <p>Margin</p>
+                    <input id="controllerMargin" type="range" min="10" max="100" value="50">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
     <script>
+        let overlay = document.getElementById('overlay');
         let more = document.getElementById('more');
         let mobile = document.getElementById('mobile');
-    
-        if (/Mobi|Android/i.test(navigator.userAgent)) {
-            more.style.display = 'block';
-            mobile.checked = true;
-        } else {
-            more.style.display = 'none';
+
+        function roomList() {
+            fetch('/rooms')
+                .then(response => response.json())
+                .then(rooms => {
+                    const roomListContainer = document.getElementById('roomList');
+                    roomListContainer.innerHTML = '';
+
+                    rooms.forEach(room => {
+                        const roomItem = document.createElement('div');
+                        roomItem.className = 'room-item';
+                        const joinButton = document.createElement('button');
+                        joinButton.textContent = 'Join room';
+                        joinButton.onclick = () => joinRoom(room);
+                        roomItem.innerHTML = `<p><span>${room.count}</span> <strong>${room.name}</strong></p>`;
+                        roomItem.appendChild(joinButton);
+                        roomListContainer.appendChild(roomItem);
+                    });
+                })
+                .catch(error => console.error(error));
         }
-    
-        mobile.addEventListener('click', () => {
-            if (mobile.checked) {
-                more.style.display = 'block';
-            } else {
-                more.style.display = 'none';
-            }
-        });
-        
-        document.getElementById('start').addEventListener('click', () => {
+
+        function joinRoom(room) {
             const nickname = document.getElementById('nickname').value;
-            const room = document.getElementById('room').value;
-            
-            if (nickname && room) {
+
+            if (nickname) {
                 let setupData = {};
-                
+
                 if (mobile.checked) {
                     setupData.mobileControls = {
                         opacity: document.getElementById('controllerOpacity').value,
                         margin: document.getElementById('controllerMargin').value
-                    }
+                    };
                 }
-                
-                const playerData = { nickname: nickname, roomId: room };
-                sessionStorage.setItem("playerData", JSON.stringify(playerData));
+
+                const metadata = { nickname: nickname, roomData: room };
+                sessionStorage.setItem("metadata", JSON.stringify(metadata));
                 sessionStorage.setItem("setupData", JSON.stringify(setupData));
                 window.location.href = "pages/arena.html";
             } else {
-                alert("Invalid server, room or nickname.");
+                alert("Invalid nickname.");
+            }
+        }
+
+        function closePopUp() {
+            overlay.style.display = "none";
+            document.querySelectorAll('.popup').forEach(popup => popup.style.display = "none");
+        }
+
+        function showPopUp(popUpId) {
+            closePopUp();
+            overlay.style.display = "flex";
+            document.getElementById(popUpId).style.display = "flex";
+        }
+
+        roomList();
+
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+            more.style.display = 'block';
+            mobile.checked = true;
+        }
+
+        mobile.addEventListener('click', () => {
+            more.style.display = mobile.checked ? 'block' : 'none';
+        });
+
+        document.getElementById('createRoom').addEventListener('click', () => {
+            const room = {
+                name: document.getElementById('room').value,
+                id: uuid.v4()
+            };
+
+            if (room.name) {
+                joinRoom(room);
+            } else {
+                alert("Invalid room.");
             }
         });
     </script>
