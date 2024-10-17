@@ -20,10 +20,11 @@ let socketId = null;
 let cameraX = 0, cameraY = 0;
 let screen = { width: window.innerWidth, height: window.innerHeight };
 let players = {}, ball = {}, score = {};
+let disconnectTimeout = null;
 let keysPressed = {}, kickPressed = false;
 let stickAngle = null; 
 let currentAngle = null;
-let teamColors = null;
+let teamColors = { home: ['#FDE100', '#000000'],  away: ['#004B9C', '#FFFFFF'] };
 
 if (setup.mobileControls) {
     const controller = setup.mobileControls;
@@ -86,11 +87,15 @@ setInterval(() => {
 
 socket.on('connect', () => {
     setTimeout(() => {
-        socket.emit('playerData', JSON.parse(sessionStorage.getItem("playerData")));
+        socket.emit('joinRoom', JSON.parse(sessionStorage.getItem("metadata")));
         socketId = socket.id;
     
         requestAnimationFrame(movePlayer);
         elements.loader.remove();
+        
+        Object.entries(teamColors).forEach(([team, color]) => {
+            document.getElementById(`${team}Colors`).style.background = `linear-gradient(to right, ${color[0]} 50%, ${color[1]} 50%)`;
+        });
     }, 1500);
 });
 
@@ -100,14 +105,6 @@ socket.on('update', (data) => {
     score = data.score;
 
     drawGame();
-});
-
-socket.on('colors', (data) => {
-    teamColors = data;
-    
-    Object.entries(teamColors).forEach(([team, color]) => {
-        document.getElementById(`${team}Colors`).style.background = `linear-gradient(to right, ${color[0]} 50%, ${color[1]} 50%)`;
-    });
 });
 
 socket.on('chat', (data) => {
@@ -308,14 +305,29 @@ function kickBall(state) {
     }
 }
 
+function awayFromKeyboard() {
+    disconnectTimeout = setTimeout(() => {
+        socket.disconnect();
+    }, 30000);
+}
+
 function movePlayer() {
     const angle = calculateAngle();
 
     if (angle !== currentAngle) {
         currentAngle = angle;
         socket.emit('move', currentAngle);
+        
+        if (currentAngle !== null) {
+            if (disconnectTimeout) {
+                clearTimeout(disconnectTimeout); 
+                disconnectTimeout = null; 
+            }
+        } else {
+            awayFromKeyboard();
+        }
     }
-
+    
     if (kickPressed) {
         const player = players[socketId];
         const detectionRange = player.radius + ball.radius + player.range;
