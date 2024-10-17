@@ -86,17 +86,23 @@ setInterval(() => {
 }, 1000);
 
 socket.on('connect', () => {
-    setTimeout(() => {
-        socket.emit('joinRoom', JSON.parse(sessionStorage.getItem("metadata")));
-        socketId = socket.id;
+    const metadata = JSON.parse(sessionStorage.getItem("metadata"));
+
+    if (metadata) {
+        setTimeout(() => {
+            socket.emit('joinRoom', metadata);
+            socketId = socket.id;
     
-        requestAnimationFrame(movePlayer);
-        elements.loader.remove();
+            requestAnimationFrame(movePlayer);
+            elements.loader.remove();
         
-        Object.entries(teamColors).forEach(([team, color]) => {
-            document.getElementById(`${team}Colors`).style.background = `linear-gradient(to right, ${color[0]} 50%, ${color[1]} 50%)`;
-        });
-    }, 1500);
+            Object.entries(teamColors).forEach(([team, color]) => {
+                document.getElementById(`${team}Colors`).style.background = `linear-gradient(to right, ${color[0]} 50%, ${color[1]} 50%)`;
+            });
+        }, 1500);
+    } else {
+        window.location.href = "../index.html";
+    } 
 });
 
 socket.on('update', (data) => {
@@ -308,6 +314,7 @@ function kickBall(state) {
 function awayFromKeyboard() {
     disconnectTimeout = setTimeout(() => {
         socket.disconnect();
+        window.location.href = "../index.html";
     }, 30000);
 }
 
