@@ -342,7 +342,7 @@ io.on('connection', (socket) => {
         const player = room.players[socket.id];
 
         const currentTime = Date.now();
-        if (currentTime - player.lastKick < 10) {
+        if (currentTime - player.lastKick < 100) {
             return; 
         }
         player.lastKick = currentTime;
