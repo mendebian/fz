@@ -291,12 +291,10 @@ io.on('connection', (socket) => {
         nickname: nickname.slice(0, 24),
         radius: 20,
         mass: 10,
-        range: 10,
+        range: 5,
         team: team,
         spawn: spawn,
-        angle: null,
-        kickCount: 0,
-        lastKick: 0,
+        angle: null
       };
     } else {
       room.players[socket.id] = {
@@ -338,14 +336,16 @@ io.on('connection', (socket) => {
       }
     });
 
+
     socket.on('kick', () => {
         const player = room.players[socket.id];
+        const now = Date.now();
 
-        const currentTime = Date.now();
-        if (currentTime - player.lastKick < 100) {
-            return; 
+        if (now - player.lastKickTime < 100) {
+            return;
         }
-        player.lastKick = currentTime;
+
+        player.lastKickTime = now;
 
         const distanceToBall = distanceBetween(player.x, player.y, room.ball.x, room.ball.y);
         const detectionRange = player.radius + room.ball.radius + player.range;
@@ -387,4 +387,3 @@ io.on('connection', (socket) => {
 server.listen(3000, () => {
   console.log('Server is running...');
 });
-           
