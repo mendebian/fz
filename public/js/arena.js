@@ -12,7 +12,8 @@ const elements = {
     fullscreenButton: document.getElementById('fullscreen'),
     kickButton: document.getElementById('kick'),
     joyStick: document.getElementById('joy'),
-    loader: document.getElementById('loaderOverlay')
+    loader: document.getElementById('loaderOverlay'),
+    kickSound: new Audio('../audio/kick.mp3')
 };
 const setup = JSON.parse(sessionStorage.getItem("setupData"));
 const socket = io();
@@ -25,6 +26,11 @@ let keysPressed = {}, kickPressed = false;
 let stickAngle = null; 
 let currentAngle = null;
 let teamColors = { home: ['#FDE100', '#000000'],  away: ['#004B9C', '#FFFFFF'] };
+
+function playSound(sound) {
+  sound.currentTime = 0;
+  sound.play();
+}
 
 if (setup.mobileControls) {
     const controller = setup.mobileControls;
@@ -154,6 +160,16 @@ socket.on('goal', (data) => {
     setTimeout(() => {
         elements.goalOverlay.style.display = 'none';
     }, 1000);
+});
+
+socket.on('playSound', (data) => {
+    const { soundType } = data;
+    
+    switch (soundType) {
+        case "goal":
+            playSound(elements.kickSound);
+            break;
+    }
 });
 
 function sendMessage() {
