@@ -28,6 +28,7 @@
             height: 100%;
             padding: 1rem;
             gap: 1rem;
+            margin: auto;
         }
 
         #rooms {
@@ -38,12 +39,12 @@
         }
 
         #rooms > p {
-            color: #FF3D00; /* Cor avermelhada */
+            color: #FF3D00; 
             text-align: center;
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 0.5rem;
-            text-shadow: 0 0 10px rgba(255, 61, 0, 0.7); /* Efeito de brilho */
+            text-shadow: 0 0 10px rgba(255, 61, 0, 0.7);
         }
 
         #roomList {
@@ -68,8 +69,8 @@
             border: 1px solid #202020;
             border-radius: 4px;
             transition: background-color 0.3s;
-            opacity: 0; /* Inicialmente invisível para animação */
-            animation: fadeIn 0.3s forwards; /* Animação de carregamento */
+            opacity: 0;
+            animation: fadeIn 0.3s forwards; 
         }
 
         @keyframes fadeIn {
@@ -107,6 +108,7 @@
         
         #setup {
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
             gap: 0.5rem;
         }
@@ -120,7 +122,7 @@
         }
 
         #room, #nickname {
-            background-color: #1E1E1E; /* Fundo do input text */
+            background-color: #1E1E1E; 
             border: solid 1px #202020;
             color: #E0E0E0;
         }
@@ -160,9 +162,9 @@
             text-align: center;
             flex-direction: column;
             gap: 1rem;
-            transition: opacity 0.3s ease; /* Transição para o popup */
+            transition: opacity 0.3s ease; 
             opacity: 0;
-            animation: popUp 0.3s forwards; /* Animação de aparecimento */
+            animation: popUp 0.3s forwards; 
         }
 
         @keyframes popUp {
@@ -322,4 +324,3 @@
     </script>
 </body>
 </html>
-    
