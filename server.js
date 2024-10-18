@@ -337,25 +337,33 @@ io.on('connection', (socket) => {
     });
 
     socket.on('kick', () => {
-      const player = room.players[socket.id];
-      if (!player) return;
+  const player = room.players[socket.id];
+  if (!player) return;
 
-      const distanceToBall = distanceBetween(player.x, player.y, room.ball.x, room.ball.y);
-      const detectionRange = player.radius + room.ball.radius + player.range;
+  const now = Date.now();
+  const lastKick = player.lastKick || 0;
+  const cooldown = 500;
 
-      if (distanceToBall <= detectionRange) {
-        const angle = Math.atan2(room.ball.y - player.y, room.ball.x - player.x);
-        const kickForce = 8;
-        
-        room.ball.velocityX += Math.cos(angle) * kickForce;
-        room.ball.velocityY += Math.sin(angle) * kickForce;
+  if (now - lastKick < cooldown) return;
 
-        room.ball.assister = room.ball.scorer;
-        room.ball.scorer = { id: socket.id, nickname: player.nickname, team: player.team };
+  player.lastKick = now;
 
-        io.to(roomId).emit('update', { players: room.players, ball: room.ball, score: room.score });
-      }
-    });
+  const distanceToBall = distanceBetween(player.x, player.y, room.ball.x, room.ball.y);
+  const detectionRange = player.radius + room.ball.radius + player.range;
+
+  if (distanceToBall <= detectionRange) {
+    const angle = Math.atan2(room.ball.y - player.y, room.ball.x - player.x);
+    const kickForce = 8;
+
+    room.ball.velocityX += Math.cos(angle) * kickForce;
+    room.ball.velocityY += Math.sin(angle) * kickForce;
+
+    room.ball.assister = room.ball.scorer;
+    room.ball.scorer = { id: socket.id, nickname: player.nickname, team: player.team };
+
+    io.to(roomId).emit('update', { players: room.players, ball: room.ball, score: room.score });
+  }
+});
 
     socket.on('disconnect', () => {
       const player = room.players[socket.id];
