@@ -342,7 +342,7 @@ io.on('connection', (socket) => {
 
   const now = Date.now();
   const lastKick = player.lastKick || 0;
-  const cooldown = 500;
+  const cooldown = 250;
 
   if (now - lastKick < cooldown) return;
 
