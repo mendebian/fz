@@ -361,6 +361,7 @@ io.on('connection', (socket) => {
             room.ball.scorer = { id: socket.id, nickname: player.nickname, team: player.team };
 
             io.to(roomId).emit('update', { players: room.players, ball: room.ball, score: room.score });
+            io.to(roomId).emit('playSound', { soundType: 'goal' });
         }
     });
 
