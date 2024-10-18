@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const http = require('http');
 const path = require('path');
@@ -6,10 +7,53 @@ const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
+const bannedIPs = new Set(loadBannedIPs());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 const rooms = {};
+
+function loadBannedIPs() {
+  try {
+    const data = fs.readFileSync('bannedIPs.json', 'utf-8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.log('Nenhum IP banido encontrado.');
+    return [];
+  }
+}
+
+function saveBannedIPs() {
+  fs.writeFileSync('bannedIPs.json', JSON.stringify([...bannedIPs]));
+}
+
+app.get('/players', (req, res) => {
+  const roomId = req.query.roomId;
+
+  if (!roomId || !rooms[roomId]) {
+    return res.status(404).json({ error: 'Sala não encontrada.' });
+  }
+
+  const players = Object.keys(rooms[roomId].players).map(id => ({
+    id,
+    nickname: rooms[roomId].players[id].nickname,
+    ip: io.sockets.sockets.get(id)?.handshake.address || 'IP não disponível'
+  }));
+
+  res.json(players);
+});
+
+app.post('/ban-ip', (req, res) => {
+  const { ip } = req.body;
+
+  if (ip) {
+    bannedIPs.add(ip);
+    saveBannedIPs();
+    res.status(200).json({ message: 'IP banido com sucesso.' });
+  } else {
+    res.status(400).json({ message: 'IP inválido.' });
+  }
+});
 
 app.get('/rooms', (req, res) => {
   const roomList = Object.keys(rooms).map(room => ({
@@ -379,3 +423,4 @@ io.on('connection', (socket) => {
 server.listen(3000, () => {
   console.log('Server is running...');
 });
+           
