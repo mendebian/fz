@@ -317,6 +317,13 @@ document.addEventListener('keyup', function(event) {
     }
 });
 
+function awayFromKeyboard() {
+    disconnectTimeout = setTimeout(() => {
+        socket.disconnect();
+        window.location.href = "../index.html";
+    }, 30000);
+}
+
 function kickBall(state) {
     const player = document.getElementById(`player-${socketId}`);
     
@@ -327,13 +334,6 @@ function kickBall(state) {
         kickPressed = false;
         player.classList.remove('player-active');
     }
-}
-
-function awayFromKeyboard() {
-    disconnectTimeout = setTimeout(() => {
-        socket.disconnect();
-        window.location.href = "../index.html";
-    }, 30000);
 }
 
 function movePlayer() {
@@ -359,7 +359,7 @@ function movePlayer() {
         const player = players[socketId];
         const detectionRange = player.radius + ball.radius + player.range;
 
-        if (distanceBetween(player.x, player.y, ball.x, ball.y) <= detectionRange) {
+        if (player.team && distanceBetween(player.x, player.y, ball.x, ball.y) <= detectionRange) {
             socket.emit('kick');
             kickPressed = false;
         }
