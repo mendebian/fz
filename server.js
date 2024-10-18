@@ -337,37 +337,31 @@ io.on('connection', (socket) => {
         player.angle = (angle !== null) ? angle : null;
       }
     });
-    
+
     socket.on('kick', () => {
-      const player = room.players[socket.id];
-    
-      const now = Date.now();
-      const cooldown = 250;
+        const player = room.players[socket.id];
 
-      if (now - player.lastKick > cooldown) {
-        player.kickCount = 0;
-      }
+        const currentTime = Date.now();
+        if (currentTime - player.lastKick < 10) {
+            return; 
+        }
+        player.lastKick = currentTime;
 
-      if (player.kickCount >= 2) return;
+        const distanceToBall = distanceBetween(player.x, player.y, room.ball.x, room.ball.y);
+        const detectionRange = player.radius + room.ball.radius + player.range;
 
-      player.kickCount++;
-      player.lastKick = now;
+        if (distanceToBall <= detectionRange) {
+            const angle = Math.atan2(room.ball.y - player.y, room.ball.x - player.x);
+            const kickForce = 8;
 
-      const distanceToBall = distanceBetween(player.x, player.y, room.ball.x, room.ball.y);
-      const detectionRange = player.radius + room.ball.radius + player.range;
+            room.ball.velocityX += Math.cos(angle) * kickForce;
+            room.ball.velocityY += Math.sin(angle) * kickForce;
 
-      if (distanceToBall <= detectionRange) {
-        const angle = Math.atan2(room.ball.y - player.y, room.ball.x - player.x);
-        const kickForce = 8;
+            room.ball.assister = room.ball.scorer;
+            room.ball.scorer = { id: socket.id, nickname: player.nickname, team: player.team };
 
-        room.ball.velocityX += Math.cos(angle) * kickForce;
-        room.ball.velocityY += Math.sin(angle) * kickForce;
-
-        room.ball.assister = room.ball.scorer;
-        room.ball.scorer = { id: socket.id, nickname: player.nickname, team: player.team };
-
-        io.to(roomId).emit('update', { players: room.players, ball: room.ball, score: room.score });
-      }
+            io.to(roomId).emit('update', { players: room.players, ball: room.ball, score: room.score });
+        }
     });
 
     socket.on('disconnect', () => {
