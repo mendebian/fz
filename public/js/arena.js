@@ -333,7 +333,9 @@ function movePlayer() {
                 disconnectTimeout = null; 
             }
         } else {
-            awayFromKeyboard();
+            if (players[socketId].team) {
+                awayFromKeyboard();
+            }
         }
     }
     
